@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reverie Fics | Custom Fanfictions & Stories</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">Reverie<span>Fics.</span></div>
+        <div class="nav-buttons">
+            <button id="open-auth-btn" class="btn btn-primary nav-login-btn">
+                Log In <i class="fas fa-user"></i>
+            </button>
+            <button id="theme-toggle" class="theme-btn" title="Toggle Dark/Light Mode">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </nav>
+    <!-- Hero Section -->
+    <header class="hero">
+        <p class="tagline">Welcome to my world of imagination</p>
+        <h1>Your Fantasies, <span>Written.</span></h1>
+        <p class="bio">Hi, I'm the author behind your favorite Wattpad stories. Here you can read exclusive upcoming chapters or commission a bespoke fanfiction tailored just for you.</p>
+    </header>
+
+    <!-- Main Content: The 2 Cards -->
+    <main class="container">
+        <div class="cards-grid">
+            
+            <!-- Card 1: Wattpad Story -->
+            <div class="card">
+                <div class="card-image">
+                    <span class="badge">Ongoing Story</span>
+                    <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Story Cover">
+                </div>
+                <div class="card-content">
+                    <h2>Midnight Confessions</h2>
+                    <p>Couldn't wait for the next Wattpad update? Read the exclusive upcoming chapters of my ongoing romance story right here before anyone else.</p>
+                    <a href="#your-story-link" class="btn btn-secondary">Read Next Chapters <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <!-- Card 2: Custom Fanfic -->
+            <div class="card highlight-card">
+                <div class="card-image">
+                    <span class="badge badge-glow">Commissions Open</span>
+                    <img src="https://images.unsplash.com/photo-1455390582262-044cdead277a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Custom Story">
+                </div>
+                <div class="card-content">
+                    <h2>Bespoke Fanfiction</h2>
+                    <p>Have a specific scenario, AU, or pairing in mind? Let me bring your daydream to life. Get a custom, personalized fanfic written exclusively for you.</p>
+                    <button id="open-modal-btn" class="btn btn-primary">Request a Story <i class="fas fa-magic"></i></button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Reader Testimonials -->
+        <section class="reviews">
+            <h3>What Readers Say</h3>
+            <div class="review-grid">
+                <div class="review-box">
+                    <p>"The custom fanfic she wrote for me was beyond my expectations! Every detail was captured perfectly."</p>
+                    <span>- @starlight_reader (Wattpad)</span>
+                </div>
+                <div class="review-box">
+                    <p>"I'm literally obsessed with her writing style. The way she portrays emotions is just pure magic!"</p>
+                    <span>- @kpop_lover99 (Wattpad)</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="social-links">
+            <a href="#" title="Wattpad"><i class="fa-solid fa-W"></i></a> <!-- Wattpad Icon representation -->
+            <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" title="TikTok"><i class="fab fa-tiktok"></i></a>
+        </div>
+        <p>&copy; 2024 Reverie Fics. All rights reserved.</p>
+    </footer>
+
+    <!-- Popup Modal for Custom Story Request -->
+    <div id="request-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Order Your Custom Fanfic</h2>
+            <p>Fill out the details below and I'll get back to you soon!</p>
+            <form id="fanfic-form">
+                <div class="input-group">
+                    <label>Your Name / Pen Name</label>
+                    <input type="text" required placeholder="e.g. Sarah">
+                </div>
+                <div class="input-group">
+                    <label>Email or WhatsApp Number</label>
+                    <input type="text" required placeholder="How can I contact you?">
+                </div>
+                <div class="input-group">
+                    <label>Fandom / Pairing (Character Names)</label>
+                    <input type="text" required placeholder="e.g. BTS Jungkook x Y/N, Harry Potter AU">
+                </div>
+                <div class="input-group">
+                    <label>Your Plot Idea & Vibe</label>
+                    <textarea rows="4" required placeholder="Describe what happens in the story, genre (Fluff, Angst, Romance), etc."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Send Request <i class="fas fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </div>
+        <!-- Popup Modal for Log In / Sign Up -->
+        <!-- Popup Modal for Log In / Sign Up -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn auth-close">&times;</span>
+            
+            <!-- Log In Section -->
+            <div id="login-section">
+                <h2>Welcome Back</h2>
+                <p>Log in to access exclusive chapters and manage your requests.</p>
+                <form id="login-form">
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <input type="email" id="login-email" required placeholder="Enter your email">
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" id="login-password" required placeholder="Enter your password">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Log In <i class="fas fa-sign-in-alt"></i></button>
+                </form>
+                <p class="auth-switch">Don't have an account? <span id="show-signup">Sign Up</span></p>
+            </div>
+
+            <!-- Sign Up Section (Hidden by default) -->
+            <div id="signup-section" style="display: none;">
+                <h2>Join Reverie Fics</h2>
+                <p>Create an account to start your fantasy journey.</p>
+                <form id="signup-form">
+                    <div class="input-group">
+                        <label>Your Name / Pen Name</label>
+                        <input type="text" id="signup-name" required placeholder="e.g. Starlight Reader">
+                    </div>
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <input type="email" id="signup-email" required placeholder="Enter your email">
+                    </div>
+                    <div class="input-group">
+                        <label>Create Password</label>
+                        <input type="password" id="signup-password" required placeholder="At least 6 characters">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account <i class="fas fa-user-plus"></i></button>
+                </form>
+                <p class="auth-switch">Already have an account? <span id="show-login">Log In</span></p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Custom JS (type="module" Firebase සඳහා අත්‍යවශ්‍ය වේ) -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>

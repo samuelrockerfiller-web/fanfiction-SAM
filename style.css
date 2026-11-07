@@ -1,0 +1,413 @@
+/* Color Variables (Light Mode Default) */
+:root {
+    --bg-color: #faf8f5;
+    --text-color: #2c2533;
+    --text-muted: #6e6577;
+    --card-bg: #ffffff;
+    --accent-color: #7c4dff;
+    --accent-hover: #651fff;
+    --border-color: #eae5f0;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+/* Dark Mode Variables */
+body.dark-mode {
+    --bg-color: #120e16;
+    --text-color: #f3eef8;
+    --text-muted: #a397b0;
+    --card-bg: #1d1724;
+    --accent-color: #9d75ff;
+    --accent-hover: #b494ff;
+    --border-color: #2f263a;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 5%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.logo span {
+    color: var(--accent-color);
+    font-style: italic;
+}
+
+.theme-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    font-size: 1.2rem;
+    padding: 10px 14px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    max-width: 750px;
+    margin: 0 auto;
+}
+
+.tagline {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.85rem;
+    color: var(--accent-color);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.hero h1 span {
+    font-style: italic;
+    color: var(--accent-color);
+}
+
+.bio {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+}
+
+/* Main Container & Cards */
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2.5rem;
+    margin-bottom: 4rem;
+}
+
+.card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+}
+
+.highlight-card {
+    border: 2px solid var(--accent-color);
+}
+
+.card-image {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.card:hover .card-image img {
+    transform: scale(1.05);
+}
+
+.badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    z-index: 2;
+    backdrop-filter: blur(4px);
+}
+
+.badge-glow {
+    background: var(--accent-color);
+    box-shadow: 0 0 10px var(--accent-color);
+}
+
+.card-content {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.card-content h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    margin-bottom: 0.8rem;
+}
+
+.card-content p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 1.8rem;
+    flex-grow: 1;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    text-align: center;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.btn i {
+    margin-left: 8px;
+}
+
+.btn-primary {
+    background: var(--accent-color);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: var(--accent-hover);
+    box-shadow: 0 5px 15px rgba(124, 77, 255, 0.3);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+/* Reviews Section */
+.reviews {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.reviews h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.review-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.review-box {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    font-style: italic;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.review-box span {
+    display: block;
+    margin-top: 10px;
+    font-style: normal;
+    font-weight: 600;
+    color: var(--accent-color);
+    font-size: 0.85rem;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 3rem 1rem;
+    margin-top: 3rem;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.social-links {
+    margin-bottom: 1rem;
+}
+
+.social-links a {
+    color: var(--text-color);
+    font-size: 1.2rem;
+    margin: 0 10px;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.social-links a:hover {
+    color: var(--accent-color);
+}
+
+/* Modal (Popup Form) */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.modal-content {
+    background: var(--card-bg);
+    padding: 2.5rem;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 500px;
+    position: relative;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    border: 1px solid var(--border-color);
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+
+.modal-content h2 {
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 0.5rem;
+}
+
+.modal-content p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+
+.input-group {
+    margin-bottom: 1.2rem;
+}
+
+.input-group label {
+    display: block;
+    font-size: 0.85rem;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.input-group input, .input-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
+}
+
+.input-group input:focus, .input-group textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+    .hero h1 { font-size: 2.2rem; }
+    .modal-content { padding: 1.5rem; }
+}
+/* --- Navbar Buttons & Auth Modal Styles --- */
+.nav-buttons {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.nav-login-btn {
+    padding: 8px 20px;
+    font-size: 0.9rem;
+    border-radius: 25px;
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: 1.2rem;
+    margin-bottom: 0 !important;
+    font-size: 0.9rem;
+}
+
+.auth-switch span {
+    color: var(--accent-color);
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    transition: color 0.3s ease;
+}
+
+.auth-switch span:hover {
+    color: var(--accent-hover);
+}
