@@ -411,3 +411,214 @@ footer {
 .auth-switch span:hover {
     color: var(--accent-hover);
 }
+/* --- Google Button & Divider Styles --- */
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 1.5rem 0;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.divider span {
+    padding: 0 12px;
+}
+
+.btn-google {
+    width: 100%;
+    background: var(--bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-weight: 500;
+}
+
+.btn-google i {
+    margin-left: 0;
+    color: #ea4335; /* Google Red Color */
+    font-size: 1.1rem;
+}
+
+.btn-google:hover {
+    border-color: var(--accent-color);
+    background: var(--card-bg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+/* --- Stories Page & Reader Styles --- */
+.stories-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.stories-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.stories-header h1 span {
+    font-style: italic;
+    color: var(--accent-color);
+}
+
+.stories-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    max-width: 750px;
+    margin: 0 auto;
+}
+
+.loading-text {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    padding: 2rem;
+}
+
+.story-item {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+}
+
+.story-item:hover {
+    transform: translateX(8px);
+    border-color: var(--accent-color);
+}
+
+.story-item h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.story-item span {
+    color: var(--accent-color);
+    font-weight: 500;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Reader Box (කතාව කියවන කොටුව) */
+.reader-box {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 3rem;
+    max-width: 850px;
+    margin: 0 auto;
+    box-shadow: var(--shadow);
+}
+
+.reader-box h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.reader-divider {
+    height: 2px;
+    width: 80px;
+    background: var(--accent-color);
+    margin: 0 auto 2.5rem auto;
+}
+
+.story-text {
+    font-size: 1.08rem;
+    line-height: 1.9;
+    color: var(--text-color);
+    white-space: pre-wrap; /* Firestore හි ඇති ඡේද වෙන් කිරීම් (Paragraph breaks) ඒ අයුරින්ම පෙන්වයි */
+    text-align: left;
+}
+
+@media (max-width: 600px) {
+    .reader-box { padding: 1.5rem; }
+    .story-item { padding: 1.2rem; flex-direction: column; align-items: flex-start; gap: 10px; }
+}
+.story-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+/* --- User Story Requests (Action Modal) Styles --- */
+.requests-container {
+    max-height: 400px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-right: 5px;
+}
+
+.request-card {
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.2rem;
+    text-align: left;
+    transition: border-color 0.3s ease;
+}
+
+.request-card:hover {
+    border-color: var(--accent-color);
+}
+
+.req-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+.req-card-header h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--accent-color);
+}
+
+.status-badge {
+    background: rgba(124, 77, 255, 0.15);
+    color: var(--accent-color);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.req-plot-text {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    margin-bottom: 0.8rem !important;
+    white-space: pre-wrap;
+}
+
+.req-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}

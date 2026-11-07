@@ -14,10 +14,13 @@
 <body>
 
     <!-- Navigation -->
-    <!-- Navigation -->
     <nav class="navbar">
         <div class="logo">Reverie<span>Fics.</span></div>
         <div class="nav-buttons">
+            <!-- Log වූ පසු පමණක් පෙනෙන Action බොත්තම -->
+            <button id="action-btn" class="btn btn-secondary nav-login-btn" style="display: none;">
+                Action <i class="fas fa-clipboard-list"></i>
+            </button>
             <button id="open-auth-btn" class="btn btn-primary nav-login-btn">
                 Log In <i class="fas fa-user"></i>
             </button>
@@ -26,6 +29,7 @@
             </button>
         </div>
     </nav>
+    
     <!-- Hero Section -->
     <header class="hero">
         <p class="tagline">Welcome to my world of imagination</p>
@@ -46,7 +50,7 @@
                 <div class="card-content">
                     <h2>Midnight Confessions</h2>
                     <p>Couldn't wait for the next Wattpad update? Read the exclusive upcoming chapters of my ongoing romance story right here before anyone else.</p>
-                    <a href="#your-story-link" class="btn btn-secondary">Read Next Chapters <i class="fas fa-arrow-right"></i></a>
+                    <a href="stories.html" id="read-stories-btn" class="btn btn-secondary">Read Next Chapters <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
 
@@ -91,7 +95,7 @@
         <p>&copy; 2024 Reverie Fics. All rights reserved.</p>
     </footer>
 
-    <!-- Popup Modal for Custom Story Request -->
+        <!-- Popup Modal for Custom Story Request -->
     <div id="request-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
@@ -100,24 +104,25 @@
             <form id="fanfic-form">
                 <div class="input-group">
                     <label>Your Name / Pen Name</label>
-                    <input type="text" required placeholder="e.g. Sarah">
+                    <input type="text" id="req-name" required placeholder="e.g. Sarah">
                 </div>
                 <div class="input-group">
                     <label>Email or WhatsApp Number</label>
-                    <input type="text" required placeholder="How can I contact you?">
+                    <input type="text" id="req-contact" required placeholder="How can I contact you?">
                 </div>
                 <div class="input-group">
                     <label>Fandom / Pairing (Character Names)</label>
-                    <input type="text" required placeholder="e.g. BTS Jungkook x Y/N, Harry Potter AU">
+                    <input type="text" id="req-fandom" required placeholder="e.g. BTS Jungkook x Y/N, Harry Potter AU">
                 </div>
                 <div class="input-group">
                     <label>Your Plot Idea & Vibe</label>
-                    <textarea rows="4" required placeholder="Describe what happens in the story, genre (Fluff, Angst, Romance), etc."></textarea>
+                    <textarea id="req-plot" rows="4" required placeholder="Describe what happens in the story, genre (Fluff, Angst, Romance), etc."></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Send Request <i class="fas fa-paper-plane"></i></button>
+                <button type="submit" id="req-submit-btn" class="btn btn-primary" style="width: 100%;">Send Request <i class="fas fa-paper-plane"></i></button>
             </form>
         </div>
     </div>
+        <!-- Popup Modal for Log In / Sign Up -->
         <!-- Popup Modal for Log In / Sign Up -->
         <!-- Popup Modal for Log In / Sign Up -->
     <div id="auth-modal" class="modal">
@@ -164,6 +169,27 @@
                 <p class="auth-switch">Already have an account? <span id="show-login">Log In</span></p>
             </div>
 
+            <!-- Google Sign-In Section (අලුතින් එකතු කළ කොටස) -->
+            <div class="divider">
+                <span>OR</span>
+            </div>
+            <button type="button" id="google-login-btn" class="btn btn-google">
+                <i class="fab fa-google"></i> Continue with Google
+            </button>
+
+        </div>
+    </div>
+        <!-- Popup Modal for Viewing User's Story Requests (Action) -->
+    <div id="my-requests-modal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <span class="close-btn my-req-close">&times;</span>
+            <h2>My Story Requests</h2>
+            <p>Here are the custom fanfictions you have requested so far.</p>
+            
+            <!-- පරිශීලකයාගේ Requests ලැයිස්තුව වැටෙන තැන -->
+            <div id="user-requests-list" class="requests-container">
+                <p class="loading-text"><i class="fas fa-spinner fa-spin"></i> Loading your requests...</p>
+            </div>
         </div>
     </div>
 

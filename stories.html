@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Read Stories | Reverie Fics</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html" class="logo" style="text-decoration: none; color: inherit;">Reverie<span>Fics.</span></a>
+        <div class="nav-buttons">
+            <a href="index.html" class="btn btn-secondary nav-login-btn">
+                <i class="fas fa-arrow-left" style="margin-left: 0; margin-right: 6px;"></i> Home
+            </a>
+            <button id="theme-toggle" class="theme-btn" title="Toggle Dark/Light Mode">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </nav>
+
+    <main class="container">
+        
+        <!-- 1. කතා ලැයිස්තුව පෙන්වන කොටස (Stories List View) -->
+        <section id="stories-list-section">
+            <div class="stories-header">
+                <p class="tagline">Exclusive Content</p>
+                <h1>Available <span>Chapters & Stories</span></h1>
+                <p class="bio">Select a story or chapter below to start reading.</p>
+            </div>
+
+            <!-- කතා වල නම් වැටෙන තැන -->
+            <div id="stories-container" class="stories-list">
+                <p class="loading-text"><i class="fas fa-spinner fa-spin"></i> Loading stories...</p>
+            </div>
+        </section>
+
+        <!-- 2. කතාව කියවන කොටස (Story Reading View - මුලින් සැඟවී පවතී) -->
+        <section id="story-reader-section" style="display: none;">
+            <button id="back-to-list-btn" class="btn btn-secondary" style="margin-bottom: 2rem;">
+                <i class="fas fa-arrow-left" style="margin-left: 0; margin-right: 8px;"></i> Back to Stories List
+            </button>
+            
+            <article class="reader-box">
+                <h1 id="reader-title">Story Title</h1>
+                <div class="reader-divider"></div>
+                <div id="reader-content" class="story-text">
+                    <!-- කතාවේ අන්තර්ගතය මෙතැනට ලෝඩ් වේ -->
+                </div>
+            </article>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Reverie Fics. All rights reserved.</p>
+    </footer>
+
+    <!-- Stories Page JS -->
+    <script type="module" src="stories.js"></script>
+</body>
+</html>
