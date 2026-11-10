@@ -1450,3 +1450,29 @@ body.dark-mode .modal-discount-tag {
     color: #e74c3c;
     font-weight: 600;
 }
+/* --- PayPal Payment Box Styles --- */
+.paypal-box {
+    background: var(--bg-color);
+    border: 1.5px solid var(--accent-color);
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-top: 1rem;
+    text-align: center;
+    animation: slideDown 0.3s ease-out;
+}
+
+.paypal-prompt {
+    font-size: 0.9rem !important;
+    color: var(--text-color) !important;
+    margin-bottom: 1rem !important;
+}
+
+.paypal-prompt i {
+    color: #27ae60;
+    margin-right: 5px;
+}
+
+.paypal-prompt strong {
+    color: var(--accent-color);
+    font-size: 1.05rem;
+}

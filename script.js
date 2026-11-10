@@ -83,15 +83,39 @@ themeBtn.addEventListener('click', () => {
 });
 
 
-// --- 3. Story Request Popup Modal & Firestore Save Logic ---
+// --- 3. Story Request Popup Modal, PayPal Payment & Firestore Save Logic ---
 const modal = document.getElementById('request-modal');
 const openModalBtn = document.getElementById('open-modal-btn');
 const closeBtn = document.querySelector('.close-btn');
 const form = document.getElementById('fanfic-form');
 const reqSubmitBtn = document.getElementById('req-submit-btn');
 
+const paypalPaymentSection = document.getElementById('paypal-payment-section');
+const paypalAmountText = document.getElementById('paypal-amount-text');
+const cancelPaymentBtn = document.getElementById('cancel-payment-btn');
+let paypalButtonsRendered = false;
+
+// Form එකේ inputs Lock හෝ Unlock කිරීමේ පහසුකම
+function toggleFormInputs(disabled) {
+    document.getElementById('req-name').disabled = disabled;
+    document.getElementById('req-contact').disabled = disabled;
+    document.getElementById('req-fandom').disabled = disabled;
+    document.getElementById('req-plot').disabled = disabled;
+    document.getElementById('modal-time-slider').disabled = disabled;
+    document.getElementById('modal-minus-btn').disabled = disabled;
+    document.getElementById('modal-plus-btn').disabled = disabled;
+}
+
+// නැවත මුල් තත්වයට (Send Request බොත්තම පෙනෙන තත්වයට) පත් කිරීම
+function resetPaymentStep() {
+    paypalPaymentSection.style.display = 'none';
+    reqSubmitBtn.style.display = 'inline-block';
+    toggleFormInputs(false);
+}
+
 openModalBtn.addEventListener('click', () => {
     if (currentUser) {
+        resetPaymentStep();
         modal.style.display = 'flex';
         if (currentUser.displayName) {
             document.getElementById('req-name').value = currentUser.displayName;
@@ -106,57 +130,121 @@ openModalBtn.addEventListener('click', () => {
 
 closeBtn.addEventListener('click', () => {
     modal.style.display = 'none';
+    resetPaymentStep();
 });
 
-// Request එක සහ තෝරාගත් Package විස්තර Firestore හි සුරැකීම
-form.addEventListener('submit', async (e) => {
+cancelPaymentBtn.addEventListener('click', () => {
+    resetPaymentStep();
+});
+
+// "Send Request" එබූ විට PayPal බොත්තම පෙන්වීම
+form.addEventListener('submit', (e) => {
     e.preventDefault();
-    
-    reqSubmitBtn.innerHTML = 'Sending... <i class="fas fa-spinner fa-spin"></i>';
-    reqSubmitBtn.disabled = true;
 
-    const reqName = document.getElementById('req-name').value;
-    const reqContact = document.getElementById('req-contact').value;
-    const reqFandom = document.getElementById('req-fandom').value;
-    const reqPlot = document.getElementById('req-plot').value;
+    if (!window.paypal) {
+        alert("PayPal is still loading or blocked by your browser. Please refresh and try again.");
+        return;
+    }
 
-    try {
-        const userDocRef = doc(db, "story_requests", currentUser.uid);
-        await setDoc(userDocRef, {
-            accountName: currentUser.displayName || reqName,
-            accountEmail: currentUser.email,
-            lastRequestAt: serverTimestamp()
-        }, { merge: true });
+    // තෝරාගත් පැකේජයේ ගාණ පෙන්වා PayPal කොටස විවෘත කිරීම
+    paypalAmountText.textContent = selectedPackageData.finalPrice;
+    reqSubmitBtn.style.display = 'none';
+    paypalPaymentSection.style.display = 'block';
+    toggleFormInputs(true); // ගෙවන අතරතුර විස්තර වෙනස් නොවීමට Lock කිරීම
 
-        // පරිශීලකයාගේ UID එක යටතේ ඇති "requests" තුළ පැකේජ් විස්තරත් සමඟම සුරැකීම
-        const userRequestsCol = collection(db, "story_requests", currentUser.uid, "requests");
-        await addDoc(userRequestsCol, {
-            name: reqName,
-            contact: reqContact,
-            fandom: reqFandom,
-            plot: reqPlot,
-            // පැකේජයේ විස්තර (Package Details):
-            packageTime: selectedPackageData.readingTime,
-            packageMinutes: selectedPackageData.minutes,
-            packageWords: selectedPackageData.words,
-            packagePrice: selectedPackageData.finalPrice,
-            packageDiscount: selectedPackageData.discount,
-            status: "Pending",
-            requestedAt: serverTimestamp()
-        });
+    // PayPal බොත්තම් වරක් පමණක් Render කිරීම
+    if (!paypalButtonsRendered) {
+        paypal.Buttons({
+            // 1. ගෙවිය යුතු මුදල සහ පැකේජ් විස්තර PayPal වෙත යැවීම
+                        // 1. ගෙවිය යුතු මුදල, පැකේජ් විස්තර සහ පාඨකයාගේ නම/Email ඉබේම PayPal වෙත යැවීම
+            createOrder: function(data, actions) {
+                const numericPrice = selectedPackageData.finalPrice.replace('$', '');
+                
+                // පාඨකයා Form එකේ දුන් නම First Name සහ Last Name ලෙස වෙන් කර ගැනීම
+                const fullName = document.getElementById('req-name').value.trim() || "Reader";
+                const nameParts = fullName.split(' ');
+                const firstName = nameParts[0];
+                const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : "";
 
-        alert(`Thank you! Your request (${selectedPackageData.readingTime} - ${selectedPackageData.finalPrice}) has been saved! ✨`);
-        form.reset();
-        modal.style.display = 'none';
-    } catch (error) {
-        console.error("Error saving request: ", error);
-        alert("Failed to send request. Please try again!");
-    } finally {
-        reqSubmitBtn.innerHTML = 'Send Request <i class="fas fa-paper-plane"></i>';
-        reqSubmitBtn.disabled = false;
+                return actions.order.create({
+                    // PayPal කාඩ් ෆෝම් එකේ නම සහ Email ඉබේම පිරවීම (Auto-fill)
+                    payer: {
+                        name: {
+                            given_name: firstName,
+                            surname: lastName
+                        },
+                        email_address: currentUser.email
+                    },
+                    application_context: {
+                        shipping_preference: "NO_SHIPPING", // ලිපිනය ඇසීම නතර කරයි
+                        user_action: "PAY_NOW"              // කෙලින්ම "Pay Now" බොත්තම පෙන්වයි
+                    },
+                    purchase_units: [{
+                        description: `Reverie Fics Custom Story (${selectedPackageData.readingTime} - ${selectedPackageData.words})`,
+                        amount: {
+                            currency_code: "USD",
+                            value: numericPrice
+                        }
+                    }]
+                });
+            },
+            // 2. ගෙවීම සාර්ථක වූ සැණින් Firestore Database එකේ Order එක සුරැකීම
+            onApprove: async function(data, actions) {
+                try {
+                    const details = await actions.order.capture();
+                    
+                    const reqName = document.getElementById('req-name').value;
+                    const reqContact = document.getElementById('req-contact').value;
+                    const reqFandom = document.getElementById('req-fandom').value;
+                    const reqPlot = document.getElementById('req-plot').value;
+
+                    const userDocRef = doc(db, "story_requests", currentUser.uid);
+                    await setDoc(userDocRef, {
+                        accountName: currentUser.displayName || reqName,
+                        accountEmail: currentUser.email,
+                        lastRequestAt: serverTimestamp()
+                    }, { merge: true });
+
+                    const userRequestsCol = collection(db, "story_requests", currentUser.uid, "requests");
+                    await addDoc(userRequestsCol, {
+                        name: reqName,
+                        contact: reqContact,
+                        fandom: reqFandom,
+                        plot: reqPlot,
+                        packageTime: selectedPackageData.readingTime,
+                        packageMinutes: selectedPackageData.minutes,
+                        packageWords: selectedPackageData.words,
+                        packagePrice: selectedPackageData.finalPrice,
+                        packageDiscount: selectedPackageData.discount,
+                        // ගෙවීමේ විස්තර (Payment Details):
+                        paymentStatus: "Paid ✅",
+                        paypalOrderId: details.id,
+                        payerEmail: details.payer?.email_address || "",
+                        status: "Paid - Pending Author Review ✨",
+                        requestedAt: serverTimestamp()
+                    });
+
+                    alert(`Payment Successful! 🎉 Thank you, ${reqName}! Your order (${selectedPackageData.readingTime}) has been placed.`);
+                    form.reset();
+                    resetPaymentStep();
+                    modal.style.display = 'none';
+
+                } catch (error) {
+                    console.error("Error after payment:", error);
+                    alert("Payment was captured, but there was an issue saving your request. Please message the author in live chat!");
+                }
+            },
+
+            // 3. දෝෂයක් ආවොත් පෙන්වීම
+            onError: function(err) {
+                console.error("PayPal Error:", err);
+                alert("Payment could not be completed. Please try again.");
+            }
+        }).render('#paypal-button-container');
+
+        paypalButtonsRendered = true;
     }
 });
-
 
 // --- 4. Log In / Sign Up Modal & Firebase Auth Logic ---
 const authModal = document.getElementById('auth-modal');

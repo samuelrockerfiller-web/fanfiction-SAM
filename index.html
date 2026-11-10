@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reverie Fics | Custom Fanfictions & Stories</title>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=Poppins:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <!-- Navigation -->
@@ -29,28 +33,32 @@
             </button>
         </div>
     </nav>
-    
+
     <!-- Hero Section -->
     <header class="hero">
         <p class="tagline">Welcome to my world of imagination</p>
         <h1>Your Fantasies, <span>Written.</span></h1>
-        <p class="bio">Hi, I'm the author behind your favorite Wattpad stories. Here you can read exclusive upcoming chapters or commission a bespoke fanfiction tailored just for you.</p>
+        <p class="bio">Hi, I'm the author behind your favorite Wattpad stories. Here you can read exclusive upcoming
+            chapters or commission a bespoke fanfiction tailored just for you.</p>
     </header>
 
     <!-- Main Content: The 2 Cards -->
     <main class="container">
         <div class="cards-grid">
-            
+
             <!-- Card 1: Wattpad Story -->
             <div class="card">
                 <div class="card-image">
                     <span class="badge">Ongoing Story</span>
-                    <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Story Cover">
+                    <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                        alt="Story Cover">
                 </div>
                 <div class="card-content">
                     <h2>Midnight Confessions</h2>
-                    <p>Couldn't wait for the next Wattpad update? Read the exclusive upcoming chapters of my ongoing romance story right here before anyone else.</p>
-                    <a href="stories.html" id="read-stories-btn" class="btn btn-secondary">Read Next Chapters <i class="fas fa-arrow-right"></i></a>
+                    <p>Couldn't wait for the next Wattpad update? Read the exclusive upcoming chapters of my ongoing
+                        romance story right here before anyone else.</p>
+                    <a href="stories.html" id="read-stories-btn" class="btn btn-secondary">Read Next Chapters <i
+                            class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
 
@@ -58,43 +66,49 @@
             <div class="card highlight-card">
                 <div class="card-image">
                     <span class="badge badge-glow">Commissions Open</span>
-                    <img src="https://images.unsplash.com/photo-1455390582262-044cdead277a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Custom Story">
+                    <img src="https://images.unsplash.com/photo-1455390582262-044cdead277a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                        alt="Custom Story">
                 </div>
                 <div class="card-content">
                     <h2>Bespoke Fanfiction</h2>
-                    <p>Have a specific scenario, AU, or pairing in mind? Let me bring your daydream to life. Get a custom, personalized fanfic written exclusively for you.</p>
-                    <button id="open-modal-btn" class="btn btn-primary">Request a Story <i class="fas fa-magic"></i></button>
+                    <p>Have a specific scenario, AU, or pairing in mind? Let me bring your daydream to life. Get a
+                        custom, personalized fanfic written exclusively for you.</p>
+                    <button id="open-modal-btn" class="btn btn-primary">Request a Story <i
+                            class="fas fa-magic"></i></button>
                 </div>
             </div>
 
         </div>
-                        <!-- Interactive Book Pricing Section -->
+        <!-- Interactive Book Pricing Section -->
         <section class="pricing-section">
             <div class="pricing-header">
                 <p class="tagline">Bespoke Story Commissions</p>
                 <h2>Turn the Pages of <span>Your Imagination</span></h2>
-                <p class="bio">Flip through the pages or slide the feather quill below to choose your reading time and unlock progressive bulk discounts.</p>
+                <p class="bio">Flip through the pages or slide the feather quill below to choose your reading time and
+                    unlock progressive bulk discounts.</p>
             </div>
 
             <!-- The Open Book Container -->
             <div class="book-wrapper">
                 <div class="open-book" id="open-book">
-                    
+
                     <!-- පිටුව පෙරළෙන 3D Animation කොටස -->
                     <div class="page-flip-effect" id="page-flip-effect"></div>
 
                     <!-- වම් පිටුව: කාලය සහ වචන ගණන -->
                     <div class="book-page left-page">
                         <div class="page-number">Page I</div>
-                        
-                                                <h3 class="dream-quote">
-                            "Unfold your dream world in 
+
+                        <h3 class="dream-quote">
+                            "Unfold your dream world in
                             <span class="inline-time-control">
-                                <button type="button" id="inline-minus-btn" class="inline-step-btn" title="Decrease Time">
+                                <button type="button" id="inline-minus-btn" class="inline-step-btn"
+                                    title="Decrease Time">
                                     <i class="fas fa-minus"></i>
                                 </button>
                                 <span id="calc-time" class="highlight-time">5 minutes</span>
-                                <button type="button" id="inline-plus-btn" class="inline-step-btn pulse-btn" title="Increase Time">
+                                <button type="button" id="inline-plus-btn" class="inline-step-btn pulse-btn"
+                                    title="Increase Time">
                                     <i class="fas fa-plus"></i>
                                 </button>
                             </span>..."
@@ -107,14 +121,15 @@
                         </div>
 
                         <p class="page-note">
-                            Calculated at an average reading speed of 200 words per minute. Every story is crafted from scratch exclusively for you.
+                            Calculated at an average reading speed of 200 words per minute. Every story is crafted from
+                            scratch exclusively for you.
                         </p>
                     </div>
 
                     <!-- දකුණු පිටුව: මිල ගණන් සහ වට්ටම් -->
                     <div class="book-page right-page">
                         <div class="page-number">Page II</div>
-                        
+
                         <span class="commission-label">Estimated Investment</span>
 
                         <div class="price-main-display">
@@ -124,11 +139,13 @@
 
                         <!-- වට්ටම් මුදල පෙන්වන කොටුව -->
                         <div class="discount-pill" id="discount-badge" style="opacity: 0;">
-                            <i class="fas fa-sparkles"></i> Bulk Discount: You Save $<span id="calc-discount">0.00</span>!
+                            <i class="fas fa-sparkles"></i> Bulk Discount: You Save $<span
+                                id="calc-discount">0.00</span>!
                         </div>
 
                         <p class="discount-info">
-                            <i class="fas fa-gift"></i> Enjoy a special discount for every additional 5 minutes you unfold!
+                            <i class="fas fa-gift"></i> Enjoy a special discount for every additional 5 minutes you
+                            unfold!
                         </p>
 
                         <button id="order-package-btn" class="btn btn-primary" style="width: 100%; margin-top: auto;">
@@ -139,7 +156,7 @@
                 </div>
 
                 <!-- පිටු පෙරළන පාලක කොටස (Page Turn Controls & Feather Slider) -->
-                                <!-- පිටු පෙරළන පාලක කොටස (Page Turn Controls & Feather Slider) -->
+                <!-- පිටු පෙරළන පාලක කොටස (Page Turn Controls & Feather Slider) -->
                 <div class="book-controls">
                     <button type="button" id="prev-page-btn" class="page-turn-btn" title="Previous Page">
                         <i class="fas fa-book-open"></i> <i class="fas fa-chevron-left"></i> Prev
@@ -169,11 +186,13 @@
             <h3>What Readers Say</h3>
             <div class="review-grid">
                 <div class="review-box">
-                    <p>"The custom fanfic she wrote for me was beyond my expectations! Every detail was captured perfectly."</p>
+                    <p>"The custom fanfic she wrote for me was beyond my expectations! Every detail was captured
+                        perfectly."</p>
                     <span>- @starlight_reader (Wattpad)</span>
                 </div>
                 <div class="review-box">
-                    <p>"I'm literally obsessed with her writing style. The way she portrays emotions is just pure magic!"</p>
+                    <p>"I'm literally obsessed with her writing style. The way she portrays emotions is just pure
+                        magic!"</p>
                     <span>- @kpop_lover99 (Wattpad)</span>
                 </div>
             </div>
@@ -190,19 +209,19 @@
         <p>&copy; 2024 Reverie Fics. All rights reserved.</p>
     </footer>
 
-            <!-- Popup Modal for Custom Story Request -->
+    <!-- Popup Modal for Custom Story Request -->
     <div id="request-modal" class="modal">
         <div class="modal-content" style="max-width: 550px;">
             <span class="close-btn">&times;</span>
             <h2>Order Your Custom Fanfic</h2>
             <p>Customize your package and fill out the story details below!</p>
-            
+
             <form id="fanfic-form">
-                
+
                 <!-- අලුතින් එකතු කළ Package Selector කොටස -->
                 <div class="modal-package-box">
                     <label class="pkg-box-title"><i class="fas fa-gem"></i> Select Your Story Package</label>
-                    
+
                     <div class="modal-pkg-controls">
                         <button type="button" id="modal-minus-btn" class="inline-step-btn" title="Decrease Time">
                             <i class="fas fa-minus"></i>
@@ -217,7 +236,8 @@
                     </div>
 
                     <!-- වින්ඩෝව ඇතුළේම කාලය වෙනස් කළ හැකි Slider එක -->
-                    <input type="range" id="modal-time-slider" min="0" max="24" step="1" value="0" class="quill-slider" style="margin: 10px 0;">
+                    <input type="range" id="modal-time-slider" min="0" max="24" step="1" value="0" class="quill-slider"
+                        style="margin: 10px 0;">
 
                     <div class="modal-pkg-price-row">
                         <div>
@@ -244,19 +264,33 @@
                 </div>
                 <div class="input-group">
                     <label>Your Plot Idea & Vibe</label>
-                    <textarea id="req-plot" rows="4" required placeholder="Describe what happens in the story, genre (Fluff, Angst, Romance), etc."></textarea>
+                    <textarea id="req-plot" rows="4" required
+                        placeholder="Describe what happens in the story, genre (Fluff, Angst, Romance), etc."></textarea>
                 </div>
-                <button type="submit" id="req-submit-btn" class="btn btn-primary" style="width: 100%;">Send Request <i class="fas fa-paper-plane"></i></button>
+                <button type="submit" id="req-submit-btn" class="btn btn-primary" style="width: 100%;">Send Request <i
+                        class="fas fa-paper-plane"></i></button>
+                <!-- Send Request එබූ පසු මතුවන PayPal ගෙවීමේ කොටස -->
+                <div id="paypal-payment-section" class="paypal-box" style="display: none;">
+                    <p class="paypal-prompt">
+                        <i class="fas fa-lock"></i> Complete your payment of <strong
+                            id="paypal-amount-text">$9.90</strong> to submit your request:
+                    </p>
+                    <div id="paypal-button-container"></div>
+                    <button type="button" id="cancel-payment-btn" class="btn btn-secondary"
+                        style="width: 100%; margin-top: 8px; padding: 8px;">
+                        <i class="fas fa-arrow-left"></i> Edit Story Details
+                    </button>
+                </div>
             </form>
         </div>
     </div>
-        <!-- Popup Modal for Log In / Sign Up -->
-        <!-- Popup Modal for Log In / Sign Up -->
-        <!-- Popup Modal for Log In / Sign Up -->
+    <!-- Popup Modal for Log In / Sign Up -->
+    <!-- Popup Modal for Log In / Sign Up -->
+    <!-- Popup Modal for Log In / Sign Up -->
     <div id="auth-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn auth-close">&times;</span>
-            
+
             <!-- Log In Section -->
             <div id="login-section">
                 <h2>Welcome Back</h2>
@@ -270,7 +304,8 @@
                         <label>Password</label>
                         <input type="password" id="login-password" required placeholder="Enter your password">
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">Log In <i class="fas fa-sign-in-alt"></i></button>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Log In <i
+                            class="fas fa-sign-in-alt"></i></button>
                 </form>
                 <p class="auth-switch">Don't have an account? <span id="show-signup">Sign Up</span></p>
             </div>
@@ -292,7 +327,8 @@
                         <label>Create Password</label>
                         <input type="password" id="signup-password" required placeholder="At least 6 characters">
                     </div>
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account <i class="fas fa-user-plus"></i></button>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account <i
+                            class="fas fa-user-plus"></i></button>
                 </form>
                 <p class="auth-switch">Already have an account? <span id="show-login">Log In</span></p>
             </div>
@@ -307,20 +343,20 @@
 
         </div>
     </div>
-        <!-- Popup Modal for Viewing User's Story Requests (Action) -->
+    <!-- Popup Modal for Viewing User's Story Requests (Action) -->
     <div id="my-requests-modal" class="modal">
         <div class="modal-content" style="max-width: 600px;">
             <span class="close-btn my-req-close">&times;</span>
             <h2>My Story Requests</h2>
             <p>Here are the custom fanfictions you have requested so far.</p>
-            
+
             <!-- පරිශීලකයාගේ Requests ලැයිස්තුව වැටෙන තැන -->
             <div id="user-requests-list" class="requests-container">
                 <p class="loading-text"><i class="fas fa-spinner fa-spin"></i> Loading your requests...</p>
             </div>
         </div>
     </div>
-        <!-- Floating Message Button (FAB) -->
+    <!-- Floating Message Button (FAB) -->
     <button id="chat-fab-btn" class="chat-fab" title="Message the Author">
         <i class="fas fa-comment-dots"></i>
         <span class="fab-badge" id="fab-msg-left">3</span>
@@ -339,11 +375,12 @@
         <!-- පණිවිඩ පෙන්වන කොටස -->
         <div id="chat-messages" class="chat-body">
             <div class="chat-welcome-note">
-                Have a quick question about a story or commission? You can send up to <strong>3 direct messages</strong> to the author here! ✨
+                Have a quick question about a story or commission? You can send up to <strong>3 direct messages</strong>
+                to the author here! ✨
             </div>
         </div>
 
-               <!-- පණිවිඩ ටයිප් කරන කොටස -->
+        <!-- පණිවිඩ ටයිප් කරන කොටස -->
         <div class="chat-char-info">
             <span id="chat-char-count">0 / 250</span>
         </div>
@@ -355,7 +392,11 @@
         </form>
     </div>
 
+    <!-- PayPal SDK Script (ඔබගේ Client ID එක සමඟ) -->
+    <script src="https://www.paypal.com/sdk/js?client-id=BAAsDwqLk2liDh4tqQ_qaS-hUrCoOw8xcKSKts95ipNghyFqjeVQkY2YWglRvChaXhBSrC-HbPQKKZIn5A&currency=USD"></script>
+
     <!-- Custom JS (type="module" Firebase සඳහා අත්‍යවශ්‍ය වේ) -->
     <script type="module" src="script.js"></script>
 </body>
+
 </html>
