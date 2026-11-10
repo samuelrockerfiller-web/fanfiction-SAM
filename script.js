@@ -349,6 +349,8 @@ async function loadUserRequests() {
 const timeSlider = document.getElementById('time-slider');
 const prevPageBtn = document.getElementById('prev-page-btn');
 const nextPageBtn = document.getElementById('next-page-btn');
+const inlineMinusBtn = document.getElementById('inline-minus-btn'); // අලුත් - බොත්තම
+const inlinePlusBtn = document.getElementById('inline-plus-btn');   // අලුත් + බොත්තම
 const pageFlipEffect = document.getElementById('page-flip-effect');
 
 const calcTime = document.getElementById('calc-time');
@@ -359,8 +361,7 @@ const calcDiscount = document.getElementById('calc-discount');
 const discountBadge = document.getElementById('discount-badge');
 const orderPackageBtn = document.getElementById('order-package-btn');
 
-// ඔබ නියම කළ කාල පරතරයන් ලැයිස්තුව (මිනිත්තු වලින්):
-// 1Hr දක්වා 5න් 5ට | 1Hr-2Hr දක්වා 15න් 15ට | 2Hr-3Hr දක්වා 20න් 20ට | 3Hr-6Hr දක්වා 30න් 30ට
+// කාල පරතරයන් ලැයිස්තුව (මිනිත්තු වලින්)
 const TIME_STEPS = [
     5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, // පළමු පැය (5m steps)
     75, 90, 105, 120,                              // දෙවන පැය (15m steps)
@@ -371,9 +372,8 @@ const TIME_STEPS = [
 const BASE_PRICE_PER_5_MIN = 9.90;
 const WORDS_PER_MINUTE = 200;
 
-let currentStepIndex = 0; // TIME_STEPS ලැයිස්තුවේ වත්මන් ස්ථානය (0 = 5 mins)
+let currentStepIndex = 0;
 
-// "Unfold your dream world in [X]..." වාක්‍යයට ගැළපෙන ලෙස කාලය සැකසීම
 function formatReadingTimeText(mins) {
     if (mins < 60) {
         return `${mins} minutes`;
@@ -385,35 +385,31 @@ function formatReadingTimeText(mins) {
     }
 }
 
-// 3D පිටුව පෙරළීමේ Animation එක
 function triggerPageFlip() {
     pageFlipEffect.classList.remove('flipping');
     void pageFlipEffect.offsetWidth;
     pageFlipEffect.classList.add('flipping');
 }
 
-// තෝරාගත් කාලයට අදාළ මුළු වට්ටම ගණනය කරන Function එක
 function calculateFairDiscount(minutes) {
     let discount = 0;
-
     for (let i = 1; i < TIME_STEPS.length; i++) {
         const stepMins = TIME_STEPS[i];
         if (stepMins > minutes) break;
 
         if (stepMins <= 60) {
-            discount += 0.90; // පළමු පැයේදී: සෑම +5m කටම $0.90 වට්ටමක්
+            discount += 0.90;
         } else if (stepMins <= 120) {
-            discount += 3.60; // දෙවන පැයේදී: සෑම +15m කටම $3.60 වට්ටමක්
+            discount += 3.60;
         } else if (stepMins <= 180) {
-            discount += 5.40; // තුන්වන පැයේදී: සෑම +20m කටම $5.40 වට්ටමක්
+            discount += 5.40;
         } else {
-            discount += 9.00; // පැය 3න් පසු: සෑම +30m කටම $9.00 වට්ටමක්
+            discount += 9.00;
         }
     }
     return discount;
 }
 
-// මිල, වචන සහ කාලය තිරයේ යාවත්කාලීන කරන ප්‍රධාන Function එක
 function updateBookCalculator(index, animate = true) {
     currentStepIndex = index;
     timeSlider.value = index;
@@ -424,17 +420,14 @@ function updateBookCalculator(index, animate = true) {
     const fiveMinBlocks = minutes / 5;
     const words = minutes * WORDS_PER_MINUTE;
 
-    // මිල සහ වට්ටම ගණනය කිරීම
     const originalPrice = fiveMinBlocks * BASE_PRICE_PER_5_MIN;
     const totalDiscount = calculateFairDiscount(minutes);
     const finalPrice = originalPrice - totalDiscount;
 
-    // තිරයේ අකුරු යාවත්කාලීන කිරීම
     calcTime.textContent = formatReadingTimeText(minutes);
     calcWords.textContent = `${words.toLocaleString()}+ Words`;
     calcFinalPrice.textContent = finalPrice.toFixed(2);
 
-    // මිනිත්තු 5ට වැඩි නම් වට්ටම් මුදල පෙන්වීම
     if (totalDiscount > 0) {
         calcOriginalPrice.style.display = 'inline';
         calcOriginalPrice.textContent = `$${originalPrice.toFixed(2)}`;
@@ -444,28 +437,34 @@ function updateBookCalculator(index, animate = true) {
         calcOriginalPrice.style.display = 'none';
         discountBadge.style.opacity = '0';
     }
+
+    // අවම (5m) හෝ උපරිම (6h) සීමාවේදී බොත්තම් අක්‍රීය (Disable) කර පෙන්වීම
+    inlineMinusBtn.disabled = (currentStepIndex === 0);
+    prevPageBtn.disabled = (currentStepIndex === 0);
+    inlinePlusBtn.disabled = (currentStepIndex === TIME_STEPS.length - 1);
+    nextPageBtn.disabled = (currentStepIndex === TIME_STEPS.length - 1);
 }
 
-// Slider එක එහා මෙහා කරන විට
+// කාලය අඩු කිරීමේ සහ වැඩි කිරීමේ පොදු Functions දෙක
+function decreaseTime() {
+    if (currentStepIndex > 0) updateBookCalculator(currentStepIndex - 1, true);
+}
+
+function increaseTime() {
+    if (currentStepIndex < TIME_STEPS.length - 1) updateBookCalculator(currentStepIndex + 1, true);
+}
+
+// Slider එක සහ බොත්තම් 4ම සම්බන්ධ කිරීම
 timeSlider.addEventListener('input', (e) => {
     updateBookCalculator(parseInt(e.target.value), true);
 });
 
-// Prev Page බොත්තම
-prevPageBtn.addEventListener('click', () => {
-    if (currentStepIndex > 0) {
-        updateBookCalculator(currentStepIndex - 1, true);
-    }
-});
+prevPageBtn.addEventListener('click', decreaseTime);
+nextPageBtn.addEventListener('click', increaseTime);
+inlineMinusBtn.addEventListener('click', decreaseTime);
+inlinePlusBtn.addEventListener('click', increaseTime);
 
-// Next Page බොත්තම
-nextPageBtn.addEventListener('click', () => {
-    if (currentStepIndex < TIME_STEPS.length - 1) {
-        updateBookCalculator(currentStepIndex + 1, true);
-    }
-});
-
-// "Order This Story" එබූ විට තෝරාගත් පැකේජය සමඟ Request Form එක විවෘත කිරීම
+// "Order This Story" බොත්තම
 orderPackageBtn.addEventListener('click', () => {
     openModalBtn.click();
     if (currentUser) {
