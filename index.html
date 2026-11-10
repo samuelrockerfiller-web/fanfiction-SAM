@@ -152,7 +152,7 @@
                             <span>30 Mins</span>
                             <span>1 Hr</span>
                             <span>2 Hrs</span>
-                            <span>3 Hrs 30 mins</span>
+                            <span>3 Hrs</span>
                             <span>6 Hrs</span>
                         </div>
                     </div>
@@ -190,13 +190,46 @@
         <p>&copy; 2024 Reverie Fics. All rights reserved.</p>
     </footer>
 
-        <!-- Popup Modal for Custom Story Request -->
+            <!-- Popup Modal for Custom Story Request -->
     <div id="request-modal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 550px;">
             <span class="close-btn">&times;</span>
             <h2>Order Your Custom Fanfic</h2>
-            <p>Fill out the details below and I'll get back to you soon!</p>
+            <p>Customize your package and fill out the story details below!</p>
+            
             <form id="fanfic-form">
+                
+                <!-- අලුතින් එකතු කළ Package Selector කොටස -->
+                <div class="modal-package-box">
+                    <label class="pkg-box-title"><i class="fas fa-gem"></i> Select Your Story Package</label>
+                    
+                    <div class="modal-pkg-controls">
+                        <button type="button" id="modal-minus-btn" class="inline-step-btn" title="Decrease Time">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <div class="modal-pkg-center">
+                            <span id="modal-pkg-time" class="modal-time-text">5 minutes</span>
+                            <span id="modal-pkg-words" class="modal-words-text">1,000+ Words</span>
+                        </div>
+                        <button type="button" id="modal-plus-btn" class="inline-step-btn" title="Increase Time">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+
+                    <!-- වින්ඩෝව ඇතුළේම කාලය වෙනස් කළ හැකි Slider එක -->
+                    <input type="range" id="modal-time-slider" min="0" max="24" step="1" value="0" class="quill-slider" style="margin: 10px 0;">
+
+                    <div class="modal-pkg-price-row">
+                        <div>
+                            <span class="modal-orig-price" id="modal-orig-price" style="display: none;">$19.80</span>
+                            <span class="modal-final-price">$<span id="modal-final-price">9.90</span></span>
+                        </div>
+                        <span class="modal-discount-tag" id="modal-discount-tag" style="display: none;">
+                            Save $<span id="modal-discount-val">0.00</span>
+                        </span>
+                    </div>
+                </div>
+
                 <div class="input-group">
                     <label>Your Name / Pen Name</label>
                     <input type="text" id="req-name" required placeholder="e.g. Sarah">
@@ -286,6 +319,40 @@
                 <p class="loading-text"><i class="fas fa-spinner fa-spin"></i> Loading your requests...</p>
             </div>
         </div>
+    </div>
+        <!-- Floating Message Button (FAB) -->
+    <button id="chat-fab-btn" class="chat-fab" title="Message the Author">
+        <i class="fas fa-comment-dots"></i>
+        <span class="fab-badge" id="fab-msg-left">3</span>
+    </button>
+
+    <!-- Floating Chat Box Window -->
+    <div id="chat-widget" class="chat-widget">
+        <div class="chat-header">
+            <div class="chat-header-info">
+                <h4><i class="fas fa-feather-alt"></i> Chat with Author</h4>
+                <span id="chat-limit-text">3 messages remaining</span>
+            </div>
+            <button id="close-chat-btn" class="chat-close-btn">&times;</button>
+        </div>
+
+        <!-- පණිවිඩ පෙන්වන කොටස -->
+        <div id="chat-messages" class="chat-body">
+            <div class="chat-welcome-note">
+                Have a quick question about a story or commission? You can send up to <strong>3 direct messages</strong> to the author here! ✨
+            </div>
+        </div>
+
+               <!-- පණිවිඩ ටයිප් කරන කොටස -->
+        <div class="chat-char-info">
+            <span id="chat-char-count">0 / 250</span>
+        </div>
+        <form id="chat-form" class="chat-footer">
+            <input type="text" id="chat-input" required placeholder="Type your message..." maxlength="250">
+            <button type="submit" id="chat-send-btn" title="Send">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </form>
     </div>
 
     <!-- Custom JS (type="module" Firebase සඳහා අත්‍යවශ්‍ය වේ) -->

@@ -17,13 +17,26 @@ import {
     addDoc, 
     doc, 
     setDoc, 
-    getDocs, // Requests කියවීම සඳහා එකතු කළා
+    getDocs,
     serverTimestamp 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+// Realtime Database සඳහා අවශ්‍ය දේවල් Import කිරීම
+import { 
+    getDatabase, 
+    ref, 
+    push, 
+    set, 
+    get,    // අලුතින් එකතු කළා
+    update, // අලුතින් එකතු කළා
+    onValue, 
+    off 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDDl41EADKjz7ibdb7pz-mcpcSC4uLUpwI",
   authDomain: "ficauther.firebaseapp.com",
+  databaseURL: "https://ficauther-default-rtdb.firebaseio.com", // ඔබේ RTDB URL එක වෙනස් නම් මෙතැනට දමන්න
   projectId: "ficauther",
   storageBucket: "ficauther.firebasestorage.app",
   messagingSenderId: "947569904685",
@@ -34,7 +47,18 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const rtdb = getDatabase(app); // Realtime Database හඳුන්වා දීම
 const googleProvider = new GoogleAuthProvider();
+
+// තෝරාගත් පැකේජයේ විස්තර තබාගන්නා පොදු විචල්‍යය (Global Variable for Database Save)
+let selectedPackageData = {
+    readingTime: "5 minutes",
+    minutes: 5,
+    words: "1,000+ Words",
+    originalPrice: "$9.90",
+    finalPrice: "$9.90",
+    discount: "$0.00"
+};
 
 
 // --- 2. Dark / Light Mode Toggle ---
@@ -84,6 +108,7 @@ closeBtn.addEventListener('click', () => {
     modal.style.display = 'none';
 });
 
+// Request එක සහ තෝරාගත් Package විස්තර Firestore හි සුරැකීම
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -103,17 +128,24 @@ form.addEventListener('submit', async (e) => {
             lastRequestAt: serverTimestamp()
         }, { merge: true });
 
+        // පරිශීලකයාගේ UID එක යටතේ ඇති "requests" තුළ පැකේජ් විස්තරත් සමඟම සුරැකීම
         const userRequestsCol = collection(db, "story_requests", currentUser.uid, "requests");
         await addDoc(userRequestsCol, {
             name: reqName,
             contact: reqContact,
             fandom: reqFandom,
             plot: reqPlot,
+            // පැකේජයේ විස්තර (Package Details):
+            packageTime: selectedPackageData.readingTime,
+            packageMinutes: selectedPackageData.minutes,
+            packageWords: selectedPackageData.words,
+            packagePrice: selectedPackageData.finalPrice,
+            packageDiscount: selectedPackageData.discount,
             status: "Pending",
             requestedAt: serverTimestamp()
         });
 
-        alert("Thank you! Your story request has been saved under your account. ✨");
+        alert(`Thank you! Your request (${selectedPackageData.readingTime} - ${selectedPackageData.finalPrice}) has been saved! ✨`);
         form.reset();
         modal.style.display = 'none';
     } catch (error) {
@@ -129,7 +161,7 @@ form.addEventListener('submit', async (e) => {
 // --- 4. Log In / Sign Up Modal & Firebase Auth Logic ---
 const authModal = document.getElementById('auth-modal');
 const openAuthBtn = document.getElementById('open-auth-btn');
-const actionBtn = document.getElementById('action-btn'); // Action බොත්තම
+const actionBtn = document.getElementById('action-btn');
 const authCloseBtn = document.querySelector('.auth-close');
 
 const loginSection = document.getElementById('login-section');
@@ -142,16 +174,15 @@ const signupForm = document.getElementById('signup-form');
 
 let currentUser = null;
 
-// පරිශීලකයා Log වී ඇත්දැයි බලා Action බොත්තම පෙන්වීම හෝ සැඟවීම
 onAuthStateChanged(auth, (user) => {
     currentUser = user;
     if (user) {
         const displayName = user.displayName ? user.displayName : "Reader";
         openAuthBtn.innerHTML = `${displayName} (Log Out) <i class="fas fa-sign-out-alt"></i>`;
-        actionBtn.style.display = 'inline-block'; // Log වී ඇත්නම් Action බොත්තම පෙන්වන්න
+        actionBtn.style.display = 'inline-block';
     } else {
         openAuthBtn.innerHTML = `Log In <i class="fas fa-user"></i>`;
-        actionBtn.style.display = 'none'; // Log වී නැත්නම් Action බොත්තම සඟවන්න
+        actionBtn.style.display = 'none';
     }
 });
 
@@ -278,7 +309,6 @@ const myRequestsModal = document.getElementById('my-requests-modal');
 const myReqCloseBtn = document.querySelector('.my-req-close');
 const userRequestsList = document.getElementById('user-requests-list');
 
-// Action බොත්තම එබූ විට Popup එක පෙන්වා දත්ත ලෝඩ් කිරීම
 actionBtn.addEventListener('click', () => {
     myRequestsModal.style.display = 'flex';
     loadUserRequests();
@@ -288,14 +318,12 @@ myReqCloseBtn.addEventListener('click', () => {
     myRequestsModal.style.display = 'none';
 });
 
-// පිටත ක්ලික් කළ විට Modals වැසීම
 window.addEventListener('click', (e) => {
     if (e.target === modal) modal.style.display = 'none';
     if (e.target === authModal) authModal.style.display = 'none';
     if (e.target === myRequestsModal) myRequestsModal.style.display = 'none';
 });
 
-// අදාළ පරිශීලකයාගේ Requests පමණක් Firestore වෙතින් ලබා ගැනීම
 async function loadUserRequests() {
     if (!currentUser) return;
 
@@ -315,13 +343,21 @@ async function loadUserRequests() {
         querySnapshot.forEach((docSnap) => {
             const data = docSnap.data();
             
-            // දිනය ලස්සනට සකසා ගැනීම
             let dateStr = "Recently";
             if (data.requestedAt) {
                 dateStr = data.requestedAt.toDate().toLocaleDateString('en-US', {
                     year: 'numeric', month: 'short', day: 'numeric'
                 });
             }
+
+            // පැකේජයේ විස්තර තිබේ නම් ලස්සනට පෙන්වීම
+            const pkgHtml = data.packageTime ? `
+                <div class="req-pkg-info">
+                    <span><i class="fas fa-clock"></i> <strong>Time:</strong> ${data.packageTime}</span>
+                    <span><i class="fas fa-feather-alt"></i> <strong>Length:</strong> ${data.packageWords}</span>
+                    <span><i class="fas fa-tag"></i> <strong>Price:</strong> ${data.packagePrice}</span>
+                </div>
+            ` : '';
 
             const reqCard = document.createElement('div');
             reqCard.className = 'request-card';
@@ -330,6 +366,7 @@ async function loadUserRequests() {
                     <h4><i class="fas fa-magic"></i> ${data.fandom}</h4>
                     <span class="status-badge">${data.status || 'Pending'}</span>
                 </div>
+                ${pkgHtml}
                 <p class="req-plot-text"><strong>Plot Idea:</strong> ${data.plot}</p>
                 <div class="req-meta">
                     <span><i class="fas fa-user-edit"></i> By: ${data.name} (${data.contact})</span>
@@ -345,12 +382,14 @@ async function loadUserRequests() {
         userRequestsList.innerHTML = '<p class="loading-text" style="color: #ea4335;">Failed to load your requests.</p>';
     }
 }
-// --- 10. Interactive Open Book Pricing Calculator Logic ---
+
+
+// --- 10. Interactive Open Book & Modal Package Calculator Logic ---
 const timeSlider = document.getElementById('time-slider');
 const prevPageBtn = document.getElementById('prev-page-btn');
 const nextPageBtn = document.getElementById('next-page-btn');
-const inlineMinusBtn = document.getElementById('inline-minus-btn'); // අලුත් - බොත්තම
-const inlinePlusBtn = document.getElementById('inline-plus-btn');   // අලුත් + බොත්තම
+const inlineMinusBtn = document.getElementById('inline-minus-btn');
+const inlinePlusBtn = document.getElementById('inline-plus-btn');
 const pageFlipEffect = document.getElementById('page-flip-effect');
 
 const calcTime = document.getElementById('calc-time');
@@ -361,7 +400,17 @@ const calcDiscount = document.getElementById('calc-discount');
 const discountBadge = document.getElementById('discount-badge');
 const orderPackageBtn = document.getElementById('order-package-btn');
 
-// කාල පරතරයන් ලැයිස්තුව (මිනිත්තු වලින්)
+// Modal එක ඇතුළත ඇති Package Selector Elements
+const modalTimeSlider = document.getElementById('modal-time-slider');
+const modalMinusBtn = document.getElementById('modal-minus-btn');
+const modalPlusBtn = document.getElementById('modal-plus-btn');
+const modalPkgTime = document.getElementById('modal-pkg-time');
+const modalPkgWords = document.getElementById('modal-pkg-words');
+const modalOrigPrice = document.getElementById('modal-orig-price');
+const modalFinalPrice = document.getElementById('modal-final-price');
+const modalDiscountTag = document.getElementById('modal-discount-tag');
+const modalDiscountVal = document.getElementById('modal-discount-val');
+
 const TIME_STEPS = [
     5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, // පළමු පැය (5m steps)
     75, 90, 105, 120,                              // දෙවන පැය (15m steps)
@@ -410,9 +459,11 @@ function calculateFairDiscount(minutes) {
     return discount;
 }
 
+// ප්‍රධාන පිටුවේ පොත සහ Modal එකේ පැකේජ් කොටුව යන දෙකම එකවර යාවත්කාලීන කරන Function එක
 function updateBookCalculator(index, animate = true) {
     currentStepIndex = index;
     timeSlider.value = index;
+    modalTimeSlider.value = index;
 
     if (animate) triggerPageFlip();
 
@@ -424,28 +475,60 @@ function updateBookCalculator(index, animate = true) {
     const totalDiscount = calculateFairDiscount(minutes);
     const finalPrice = originalPrice - totalDiscount;
 
-    calcTime.textContent = formatReadingTimeText(minutes);
-    calcWords.textContent = `${words.toLocaleString()}+ Words`;
+    const formattedTime = formatReadingTimeText(minutes);
+    const formattedWords = `${words.toLocaleString()}+ Words`;
+
+    // 1. ප්‍රධාන පිටුවේ පොත යාවත්කාලීන කිරීම
+    calcTime.textContent = formattedTime;
+    calcWords.textContent = formattedWords;
     calcFinalPrice.textContent = finalPrice.toFixed(2);
+
+    // 2. Modal එක ඇතුළත Package කොටුව යාවත්කාලීන කිරීම
+    modalPkgTime.textContent = formattedTime;
+    modalPkgWords.textContent = formattedWords;
+    modalFinalPrice.textContent = finalPrice.toFixed(2);
 
     if (totalDiscount > 0) {
         calcOriginalPrice.style.display = 'inline';
         calcOriginalPrice.textContent = `$${originalPrice.toFixed(2)}`;
         calcDiscount.textContent = totalDiscount.toFixed(2);
         discountBadge.style.opacity = '1';
+
+        modalOrigPrice.style.display = 'inline';
+        modalOrigPrice.textContent = `$${originalPrice.toFixed(2)}`;
+        modalDiscountTag.style.display = 'inline-block';
+        modalDiscountVal.textContent = totalDiscount.toFixed(2);
     } else {
         calcOriginalPrice.style.display = 'none';
         discountBadge.style.opacity = '0';
+
+        modalOrigPrice.style.display = 'none';
+        modalDiscountTag.style.display = 'none';
     }
 
-    // අවම (5m) හෝ උපරිම (6h) සීමාවේදී බොත්තම් අක්‍රීය (Disable) කර පෙන්වීම
-    inlineMinusBtn.disabled = (currentStepIndex === 0);
-    prevPageBtn.disabled = (currentStepIndex === 0);
-    inlinePlusBtn.disabled = (currentStepIndex === TIME_STEPS.length - 1);
-    nextPageBtn.disabled = (currentStepIndex === TIME_STEPS.length - 1);
+    // 3. Firestore හි සුරැකීම සඳහා වත්මන් පැකේජ් දත්ත ගබඩා කර තැබීම
+    selectedPackageData = {
+        readingTime: formattedTime,
+        minutes: minutes,
+        words: formattedWords,
+        originalPrice: `$${originalPrice.toFixed(2)}`,
+        finalPrice: `$${finalPrice.toFixed(2)}`,
+        discount: `$${totalDiscount.toFixed(2)}`
+    };
+
+    // 4. බොත්තම් සක්‍රීය/අක්‍රීය කිරීම
+    const isMin = (currentStepIndex === 0);
+    const isMax = (currentStepIndex === TIME_STEPS.length - 1);
+
+    inlineMinusBtn.disabled = isMin;
+    prevPageBtn.disabled = isMin;
+    modalMinusBtn.disabled = isMin;
+
+    inlinePlusBtn.disabled = isMax;
+    nextPageBtn.disabled = isMax;
+    modalPlusBtn.disabled = isMax;
 }
 
-// කාලය අඩු කිරීමේ සහ වැඩි කිරීමේ පොදු Functions දෙක
 function decreaseTime() {
     if (currentStepIndex > 0) updateBookCalculator(currentStepIndex - 1, true);
 }
@@ -454,26 +537,273 @@ function increaseTime() {
     if (currentStepIndex < TIME_STEPS.length - 1) updateBookCalculator(currentStepIndex + 1, true);
 }
 
-// Slider එක සහ බොත්තම් 4ම සම්බන්ධ කිරීම
-timeSlider.addEventListener('input', (e) => {
-    updateBookCalculator(parseInt(e.target.value), true);
-});
+// ප්‍රධාන පිටුවේ සහ Modal එකේ ඇති සියලුම Sliders සහ බොත්තම් සම්බන්ධ කිරීම
+timeSlider.addEventListener('input', (e) => updateBookCalculator(parseInt(e.target.value), true));
+modalTimeSlider.addEventListener('input', (e) => updateBookCalculator(parseInt(e.target.value), false));
 
 prevPageBtn.addEventListener('click', decreaseTime);
 nextPageBtn.addEventListener('click', increaseTime);
 inlineMinusBtn.addEventListener('click', decreaseTime);
 inlinePlusBtn.addEventListener('click', increaseTime);
+modalMinusBtn.addEventListener('click', decreaseTime);
+modalPlusBtn.addEventListener('click', increaseTime);
 
-// "Order This Story" බොත්තම
+// "Order This Story" එබූ විට කෙලින්ම Request Modal එක විවෘත වීම
 orderPackageBtn.addEventListener('click', () => {
     openModalBtn.click();
-    if (currentUser) {
-        const plotBox = document.getElementById('req-plot');
-        const pkgInfo = `[Selected Package: ${calcTime.textContent} (${calcWords.textContent}) - $${calcFinalPrice.textContent}]\n\n`;
-        plotBox.value = plotBox.value.replace(/^\[Selected Package:.*\]\n\n/, '');
-        plotBox.value = pkgInfo + plotBox.value;
-    }
 });
 
 // ආරම්භයේදී පළමු පියවර (මිනිත්තු 5) පෙන්වීම
 updateBookCalculator(0, false);
+
+// --- 11. Floating Chat Widget & Advanced Realtime Database Controls ---
+const chatFabBtn = document.getElementById('chat-fab-btn');
+const chatWidget = document.getElementById('chat-widget');
+const closeChatBtn = document.getElementById('close-chat-btn');
+const chatMessagesBox = document.getElementById('chat-messages');
+const chatForm = document.getElementById('chat-form');
+const chatInput = document.getElementById('chat-input');
+const chatSendBtn = document.getElementById('chat-send-btn');
+const chatLimitText = document.getElementById('chat-limit-text');
+const fabMsgLeft = document.getElementById('fab-msg-left');
+
+const MAX_CONSECUTIVE_MESSAGES = 3;
+
+// පාලන විචල්‍යයන් (Control States)
+let globalChatEnabled = true;
+let isUserBlocked = false;
+let isUserUnlimited = false;
+let consecutiveUserMsgs = 0; // ඔබේ අවසාන Reply එකට පසු පාඨකයා එවූ පණිවිඩ ගණන
+
+let activeUserChatRef = null;
+const globalSettingsRef = ref(rtdb, 'chat_settings/globalChatEnabled');
+
+// 1. Global Chat Switch එක පරීක්ෂා කිරීම (සියලු දෙනාටම Chat ඔන්/ඕෆ් කිරීම)
+onValue(globalSettingsRef, (snapshot) => {
+    if (!snapshot.exists()) {
+        // පළමු වතාවට Console එකේ පහසුවෙන් පෙනීම සඳහා true ලෙස සෑදීම
+        set(globalSettingsRef, true);
+        globalChatEnabled = true;
+    } else {
+        globalChatEnabled = snapshot.val();
+    }
+    updateChatUIState();
+});
+
+// Floating Message බොත්තම එබූ විට
+chatFabBtn.addEventListener('click', () => {
+    if (!currentUser) {
+        alert("Please log in first to send a direct message to the author! 🔒💬");
+        authModal.style.display = 'flex';
+        loginSection.style.display = 'block';
+        signupSection.style.display = 'none';
+        return;
+    }
+
+    if (chatWidget.style.display === 'flex') {
+        chatWidget.style.display = 'none';
+    } else {
+        chatWidget.style.display = 'flex';
+        chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
+    }
+});
+
+closeChatBtn.addEventListener('click', () => {
+    chatWidget.style.display = 'none';
+});
+
+// පරිශීලකයා Log වූ විට ඔහුගේ Chat ෆෝල්ඩරයට සම්බන්ධ වීම
+onAuthStateChanged(auth, async (user) => {
+    if (activeUserChatRef) {
+        off(activeUserChatRef);
+        activeUserChatRef = null;
+    }
+
+    if (user) {
+        fabMsgLeft.style.display = 'flex';
+        
+        // Firebase Console එකේ ඔබට පහසුවෙන් වෙනස් කිරීමට පරිශීලකයාගේ default settings සෑදීම
+        const userSettingsRef = ref(rtdb, `user_chats/${user.uid}/settings`);
+        const snap = await get(userSettingsRef);
+        if (!snap.exists()) {
+            await set(userSettingsRef, {
+                isBlocked: false,
+                isUnlimited: false
+            });
+        }
+        await update(ref(rtdb, `user_chats/${user.uid}/userInfo`), {
+            name: user.displayName || "Reader",
+            email: user.email
+        });
+
+        listenToUserChat(user.uid);
+    } else {
+        chatWidget.style.display = 'none';
+        fabMsgLeft.style.display = 'none';
+    }
+});
+
+// 2. අදාළ පරිශීලකයාගේ Settings සහ Messages එකවර Real-time ලබා ගැනීම
+function listenToUserChat(uid) {
+    activeUserChatRef = ref(rtdb, `user_chats/${uid}`);
+
+    onValue(activeUserChatRef, (snapshot) => {
+        const data = snapshot.val() || {};
+
+        // Settings ලබා ගැනීම (isBlocked සහ isUnlimited)
+        const settings = data.settings || {};
+        isUserBlocked = settings.isBlocked === true;
+        isUserUnlimited = settings.isUnlimited === true;
+
+        // Welcome note එක පෙන්වීම
+        chatMessagesBox.innerHTML = `
+            <div class="chat-welcome-note">
+                Have a quick question? You can send up to <strong>3 messages</strong> at a time. Once the author replies, you get 3 more! ✨
+            </div>
+        `;
+
+        consecutiveUserMsgs = 0;
+
+        // පණිවිඩ ලැයිස්තුව පරීක්ෂා කිරීම
+        if (data.messages) {
+            Object.values(data.messages).forEach((msg) => {
+                // පාඨකයා එවූ එකක් නම් ගණන වැඩි කිරීම, Author ගේ Reply එකක් නම් 0 ට Reset කිරීම!
+                if (msg.sender === 'user') {
+                    consecutiveUserMsgs++;
+                } else if (msg.sender === 'author') {
+                    consecutiveUserMsgs = 0; // Author පිළිතුරු දුන් සැණින් නැවත අවස්ථා 3ක් ලැබේ!
+                }
+
+                const bubble = document.createElement('div');
+                bubble.className = `msg-bubble ${msg.sender === 'user' ? 'msg-user' : 'msg-author'}`;
+                
+                const timeStr = msg.timestamp 
+                    ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+                    : '';
+
+                bubble.innerHTML = `
+                    <div>${msg.text}</div>
+                    <span class="msg-time">${msg.sender === 'author' ? 'Author • ' : ''}${timeStr}</span>
+                `;
+                chatMessagesBox.appendChild(bubble);
+            });
+        }
+
+        updateChatUIState();
+        chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
+    });
+}
+
+// 3. Boolean Values අනුව Chat Box එක Lock/Unlock කිරීමේ Function එක
+function updateChatUIState() {
+    // අවස්ථාව 1: ඔබ සියලු දෙනාටම Chat එක Off කර ඇත්නම් (globalChatEnabled: false)
+    if (!globalChatEnabled) {
+        chatInput.disabled = true;
+        chatSendBtn.disabled = true;
+        chatInput.placeholder = "Direct messaging is currently offline.";
+        chatLimitText.textContent = "Chat Offline";
+        fabMsgLeft.textContent = "!";
+        fabMsgLeft.style.background = "#e74c3c";
+        return;
+    }
+
+    // අවස්ථාව 2: ඔබ මෙම පරිශීලකයාව පමණක් Block කර ඇත්නම් (isBlocked: true)
+    if (isUserBlocked) {
+        chatInput.disabled = true;
+        chatSendBtn.disabled = true;
+        chatInput.placeholder = "Messaging is disabled for your account.";
+        chatLimitText.textContent = "Access Restricted";
+        fabMsgLeft.textContent = "0";
+        fabMsgLeft.style.background = "#e74c3c";
+        return;
+    }
+
+    // අවස්ථාව 3: ඔබ මෙම පරිශීලකයාට Unlimited ලබා දී ඇත්නම් (isUnlimited: true)
+    if (isUserUnlimited) {
+        chatInput.disabled = false;
+        chatSendBtn.disabled = false;
+        chatInput.placeholder = "Type your message (Unlimited)...";
+        chatLimitText.textContent = "Unlimited messaging active ✨";
+        fabMsgLeft.textContent = "∞";
+        fabMsgLeft.style.background = "#2ecc71";
+        return;
+    }
+
+    // අවස්ථාව 4: සාමාන්‍ය පරිශීලකයෙක් (පණිවිඩ 3 සීමාව)
+    const remaining = Math.max(0, MAX_CONSECUTIVE_MESSAGES - consecutiveUserMsgs);
+    fabMsgLeft.textContent = remaining;
+
+    if (remaining === 0) {
+        chatInput.disabled = true;
+        chatSendBtn.disabled = true;
+        chatInput.placeholder = "Waiting for author's reply (3/3 sent)...";
+        chatLimitText.textContent = "Wait for author reply to send more";
+        fabMsgLeft.style.background = "#f39c12"; // තැඹිලි පාට (Reply එනතුරු)
+    } else {
+        chatInput.disabled = false;
+        chatSendBtn.disabled = false;
+        chatInput.placeholder = "Type your message...";
+        chatLimitText.textContent = `${remaining} of ${MAX_CONSECUTIVE_MESSAGES} messages left`;
+        fabMsgLeft.style.background = "#2ecc71";
+    }
+}
+
+// 4. පණිවිඩයක් යැවීම
+// --- අකුරු ගණන සීමා කිරීම (Character Limit) ---
+const MAX_MESSAGE_CHARS = 250; // ඔබට අවශ්‍ය අකුරු සීමාව (උදා: 250)
+const chatCharCount = document.getElementById('chat-char-count');
+
+// පාඨකයා අකුරු Type කරන විට ගණන (0 / 250) පෙන්වීම සහ සීමාව ඉක්මවීම වැළැක්වීම
+chatInput.addEventListener('input', () => {
+    if (chatInput.value.length > MAX_MESSAGE_CHARS) {
+        chatInput.value = chatInput.value.substring(0, MAX_MESSAGE_CHARS);
+    }
+
+    const currentLen = chatInput.value.length;
+    if (chatCharCount) {
+        chatCharCount.textContent = `${currentLen} / ${MAX_MESSAGE_CHARS}`;
+        if (currentLen >= MAX_MESSAGE_CHARS) {
+            chatCharCount.classList.add('limit-reached');
+        } else {
+            chatCharCount.classList.remove('limit-reached');
+        }
+    }
+});
+
+// 4. පණිවිඩයක් යැවීම
+chatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // නීති පරීක්ෂා කිරීම
+    if (!currentUser || !globalChatEnabled || isUserBlocked) return;
+    if (!isUserUnlimited && consecutiveUserMsgs >= MAX_CONSECUTIVE_MESSAGES) return;
+
+    const text = chatInput.value.trim();
+    if (!text) return;
+
+    // අකුරු 250 ට වැඩි නම් Send වීම නැවැත්වීම
+    if (text.length > MAX_MESSAGE_CHARS) {
+        alert(`Message is too long! Maximum allowed is ${MAX_MESSAGE_CHARS} characters.`);
+        return;
+    }
+
+    // Input එක හිස් කර අකුරු ගණන නැවත 0 / 250 ලෙස සැකසීම
+    chatInput.value = '';
+    if (chatCharCount) {
+        chatCharCount.textContent = `0 / ${MAX_MESSAGE_CHARS}`;
+        chatCharCount.classList.remove('limit-reached');
+    }
+
+    try {
+        const msgListRef = ref(rtdb, `user_chats/${currentUser.uid}/messages`);
+        const newMsgRef = push(msgListRef);
+        await set(newMsgRef, {
+            sender: "user",
+            text: text,
+            timestamp: Date.now()
+        });
+    } catch (error) {
+        console.error("Failed to send message:", error);
+        alert("Could not send message.");
+    }
+});
