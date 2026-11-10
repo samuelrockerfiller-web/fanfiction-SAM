@@ -622,3 +622,439 @@ footer {
     font-size: 0.75rem;
     color: var(--text-muted);
 }
+/* =========================================================
+   MOBILE RESPONSIVENESS (දුරකථන තිර සඳහා හැඩගැන්වීම්)
+   ========================================================= */
+
+/* Popup Windows දුරකථන තිරයෙන් පිටතට යාම වැළැක්වීම සහ Scroll වීමට සැලැස්වීම */
+.modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* ටැබ්ලට් සහ ජංගම දුරකථන සඳහා (තිරයේ පළල 768px ට අඩු) */
+@media (max-width: 768px) {
+    /* 1. Navbar එක පිළිවෙලට සැකසීම */
+    .navbar {
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 1.2rem 5%;
+    }
+
+    .logo {
+        font-size: 1.5rem;
+    }
+
+    .nav-buttons {
+        gap: 8px;
+    }
+
+    .nav-login-btn {
+        padding: 7px 14px;
+        font-size: 0.8rem;
+    }
+
+    .theme-btn {
+        padding: 7px 11px;
+        font-size: 1rem;
+    }
+
+    /* 2. මුල් පිටුවේ කොටස් (Hero & Cards) */
+    .hero {
+        padding: 2rem 1rem;
+    }
+
+    .hero h1 {
+        font-size: 2.2rem;
+    }
+
+    .bio {
+        font-size: 0.95rem;
+    }
+
+    .cards-grid {
+        grid-template-columns: 1fr; /* කාඩ්පත් දෙක එක යට එක පෙන්වීම */
+        gap: 1.8rem;
+    }
+
+    .card-content {
+        padding: 1.5rem;
+    }
+
+    /* 3. කතා කියවන පිටුව (Stories Page & Reader Box) */
+    .stories-header h1 {
+        font-size: 1.9rem;
+    }
+
+    .story-item {
+        padding: 1.2rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .story-item h3 {
+        font-size: 1.15rem;
+    }
+
+    .reader-box {
+        padding: 1.8rem 1.2rem;
+        border-radius: 12px;
+    }
+
+    .reader-box h1 {
+        font-size: 1.6rem;
+    }
+
+    .story-text {
+        font-size: 1rem;
+        line-height: 1.8;
+    }
+}
+
+/* කුඩා ජංගම දුරකථන සඳහා (තිරයේ පළල 480px ට අඩු) */
+@media (max-width: 480px) {
+    /* පරිශීලකයාගේ නම දිග වූ විට Navbar එක කැඩී යාම වැළැක්වීමට */
+    .navbar {
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .nav-buttons {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    /* Popup Windows ඇතුළත ඉඩකඩ */
+    .modal {
+        padding: 0.8rem;
+    }
+
+    .modal-content {
+        padding: 1.5rem 1.2rem;
+    }
+
+    .modal-content h2 {
+        font-size: 1.4rem;
+    }
+
+    /* Action (My Requests) කාඩ්පත් දුරකථනයට ගැළපෙන ලෙස සැකසීම */
+    .req-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .req-card-header h4 {
+        font-size: 1.05rem;
+    }
+
+    .req-meta {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    #back-to-list-btn {
+        width: 100%; /* Back බොත්තම එබීමට පහසු වන ලෙස පළල් කිරීම */
+    }
+}
+/* =========================================================
+   INTERACTIVE OPEN BOOK PRICING STYLES
+   ========================================================= */
+.pricing-section {
+    margin-bottom: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.pricing-header {
+    text-align: center;
+    max-width: 650px;
+    margin: 0 auto 2.5rem auto;
+}
+
+.pricing-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.pricing-header h2 span {
+    font-style: italic;
+    color: var(--accent-color);
+}
+
+.book-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    perspective: 1500px; /* 3D පිටු පෙරළීමේ පෙනුම සඳහා */
+}
+
+/* විවෘත වූ පොත (Two-Page Spread) */
+.open-book {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: var(--card-bg);
+    border-radius: 16px;
+    border: 2px solid var(--border-color);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12), 
+                0 0 0 6px var(--bg-color), 
+                0 0 0 8px var(--border-color); /* පොතක පිටු ගොඩක් ඇති බව පෙන්වන දාරය */
+    position: relative;
+    overflow: hidden;
+    min-height: 360px;
+}
+
+.book-page {
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 2;
+}
+
+/* පොතේ මැද නැම්ම (Book Spine Shadow) */
+.left-page {
+    border-right: 1px solid var(--border-color);
+    background: linear-gradient(to right, var(--card-bg) 92%, rgba(0, 0, 0, 0.04) 100%);
+    justify-content: center;
+}
+
+.right-page {
+    background: linear-gradient(to left, var(--card-bg) 92%, rgba(0, 0, 0, 0.04) 100%);
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+}
+
+.page-number {
+    position: absolute;
+    top: 18px;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.left-page .page-number { left: 25px; }
+.right-page .page-number { right: 25px; }
+
+/* "Unfold your dream world in [X] minutes..." */
+.dream-quote {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.85rem;
+    line-height: 1.35;
+    margin: 1rem 0 1.5rem 0;
+    color: var(--text-color);
+}
+
+.highlight-time {
+    color: var(--accent-color);
+    font-style: italic;
+    border-bottom: 2px dashed var(--accent-color);
+    padding-bottom: 2px;
+}
+
+/* හොඳින් කැපී පෙනෙන වචන ගණන පෙන්වන පටිය */
+.word-count-ribbon {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(124, 77, 255, 0.12);
+    border-left: 4px solid var(--accent-color);
+    padding: 10px 16px;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.95rem;
+    color: var(--text-color);
+    margin-bottom: 1.2rem;
+    width: fit-content;
+}
+
+.word-count-ribbon i {
+    color: var(--accent-color);
+    font-size: 1.1rem;
+}
+
+.word-count-ribbon strong {
+    color: var(--accent-color);
+    font-size: 1.05rem;
+}
+
+.page-note {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+/* දකුණු පිටුවේ මිල ගණන් */
+.commission-label {
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.price-main-display {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 0.6rem;
+}
+
+.original-price {
+    font-size: 1.3rem;
+    color: var(--text-muted);
+    text-decoration: line-through;
+}
+
+.final-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.2rem;
+    font-weight: 600;
+    color: var(--text-color);
+    line-height: 1;
+}
+
+.discount-pill {
+    background: rgba(46, 204, 113, 0.15);
+    color: #27ae60;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+    transition: opacity 0.3s ease;
+}
+
+body.dark-mode .discount-pill {
+    color: #2ecc71;
+}
+
+.discount-info {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+
+.discount-info i {
+    color: var(--accent-color);
+}
+
+/* 3D Page Flip Animation Overlay */
+.page-flip-effect {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(124, 77, 255, 0.08), var(--card-bg));
+    border-left: 1px solid var(--accent-color);
+    transform-origin: left center;
+    pointer-events: none;
+    z-index: 5;
+    opacity: 0;
+}
+
+.page-flip-effect.flipping {
+    animation: flipPageAnim 0.4s ease-out;
+}
+
+@keyframes flipPageAnim {
+    0% { transform: rotateY(0deg); opacity: 0.9; }
+    50% { opacity: 0.6; }
+    100% { transform: rotateY(-180deg); opacity: 0; }
+}
+
+/* පොතට යටින් ඇති පාලක කොටස (Feather Slider & Page Turn Buttons) */
+.book-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 2rem;
+    background: var(--card-bg);
+    padding: 1rem 1.5rem;
+    border-radius: 14px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+}
+
+.page-turn-btn {
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 10px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.page-turn-btn:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    transform: translateY(-2px);
+}
+
+.quill-slider-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.quill-slider {
+    width: 100%;
+    accent-color: var(--accent-color);
+    height: 6px;
+    cursor: pointer;
+}
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+}
+
+/* Mobile Responsiveness for Open Book */
+@media (max-width: 768px) {
+    .open-book {
+        grid-template-columns: 1fr; /* දුරකථනයේදී පිටු දෙක උඩ සහ යට පෙන්වීම */
+    }
+    .left-page {
+        border-right: none;
+        border-bottom: 2px dashed var(--border-color);
+        padding: 2rem 1.5rem;
+    }
+    .right-page {
+        padding: 2rem 1.5rem;
+    }
+    .dream-quote {
+        font-size: 1.5rem;
+    }
+    .book-controls {
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+    .quill-slider-box {
+        order: -1;
+        width: 100%;
+        flex: none;
+        margin-bottom: 10px;
+    }
+    .page-turn-btn {
+        flex: 1;
+        justify-content: center;
+    }
+}

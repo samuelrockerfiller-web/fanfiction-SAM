@@ -68,6 +68,92 @@
             </div>
 
         </div>
+                        <!-- Interactive Book Pricing Section -->
+        <section class="pricing-section">
+            <div class="pricing-header">
+                <p class="tagline">Bespoke Story Commissions</p>
+                <h2>Turn the Pages of <span>Your Imagination</span></h2>
+                <p class="bio">Flip through the pages or slide the feather quill below to choose your reading time and unlock progressive bulk discounts.</p>
+            </div>
+
+            <!-- The Open Book Container -->
+            <div class="book-wrapper">
+                <div class="open-book" id="open-book">
+                    
+                    <!-- පිටුව පෙරළෙන 3D Animation කොටස -->
+                    <div class="page-flip-effect" id="page-flip-effect"></div>
+
+                    <!-- වම් පිටුව: කාලය සහ වචන ගණන -->
+                    <div class="book-page left-page">
+                        <div class="page-number">Page I</div>
+                        
+                        <h3 class="dream-quote">
+                            "Unfold your dream world in <span id="calc-time" class="highlight-time">5 minutes</span>..."
+                        </h3>
+
+                        <!-- හොඳින් කැපී පෙනෙන වචන ගණන -->
+                        <div class="word-count-ribbon">
+                            <i class="fas fa-feather-alt"></i>
+                            <span>Guaranteed Length: <strong id="calc-words">1,000+ Words</strong></span>
+                        </div>
+
+                        <p class="page-note">
+                            Calculated at an average reading speed of 200 words per minute. Every story is crafted from scratch exclusively for you.
+                        </p>
+                    </div>
+
+                    <!-- දකුණු පිටුව: මිල ගණන් සහ වට්ටම් -->
+                    <div class="book-page right-page">
+                        <div class="page-number">Page II</div>
+                        
+                        <span class="commission-label">Estimated Investment</span>
+
+                        <div class="price-main-display">
+                            <span class="original-price" id="calc-original-price" style="display: none;">$19.80</span>
+                            <div class="final-price">$<span id="calc-final-price">9.90</span></div>
+                        </div>
+
+                        <!-- වට්ටම් මුදල පෙන්වන කොටුව -->
+                        <div class="discount-pill" id="discount-badge" style="opacity: 0;">
+                            <i class="fas fa-sparkles"></i> Bulk Discount: You Save $<span id="calc-discount">0.00</span>!
+                        </div>
+
+                        <p class="discount-info">
+                            <i class="fas fa-gift"></i> Enjoy a special discount for every additional 5 minutes you unfold!
+                        </p>
+
+                        <button id="order-package-btn" class="btn btn-primary" style="width: 100%; margin-top: auto;">
+                            Order This Story <i class="fas fa-magic"></i>
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- පිටු පෙරළන පාලක කොටස (Page Turn Controls & Feather Slider) -->
+                                <!-- පිටු පෙරළන පාලක කොටස (Page Turn Controls & Feather Slider) -->
+                <div class="book-controls">
+                    <button type="button" id="prev-page-btn" class="page-turn-btn" title="Previous Page">
+                        <i class="fas fa-book-open"></i> <i class="fas fa-chevron-left"></i> Prev
+                    </button>
+
+                    <div class="quill-slider-box">
+                        <input type="range" id="time-slider" min="0" max="24" step="1" value="0" class="quill-slider">
+                        <div class="slider-labels">
+                            <span>5 Mins</span>
+                            <span>30 Mins</span>
+                            <span>1 Hr</span>
+                            <span>2 Hrs</span>
+                            <span>3 Hrs 30 mins</span>
+                            <span>6 Hrs</span>
+                        </div>
+                    </div>
+
+                    <button type="button" id="next-page-btn" class="page-turn-btn" title="Next Page">
+                        Next <i class="fas fa-chevron-right"></i> <i class="fas fa-book-open"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
 
         <!-- Reader Testimonials -->
         <section class="reviews">
