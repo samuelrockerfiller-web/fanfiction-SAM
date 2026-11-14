@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reverie Fics | Custom Fanfictions & Stories</title>
+    <script data-cfasync="false" src="https://gumroad.com/js/gumroad.js"></script>
     <!-- Google Fonts -->
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=Poppins:wght@300;400;500;600&display=swap"
@@ -41,45 +42,7 @@
         <p class="bio">Hi, I'm the author behind your favorite Wattpad stories. Here you can read exclusive upcoming
             chapters or commission a bespoke fanfiction tailored just for you.</p>
     </header>
-
-    <!-- Main Content: The 2 Cards -->
-    <main class="container">
-        <div class="cards-grid">
-
-            <!-- Card 1: Wattpad Story -->
-            <div class="card">
-                <div class="card-image">
-                    <span class="badge">Ongoing Story</span>
-                    <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                        alt="Story Cover">
-                </div>
-                <div class="card-content">
-                    <h2>Midnight Confessions</h2>
-                    <p>Couldn't wait for the next Wattpad update? Read the exclusive upcoming chapters of my ongoing
-                        romance story right here before anyone else.</p>
-                    <a href="stories.html" id="read-stories-btn" class="btn btn-secondary">Read Next Chapters <i
-                            class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
-
-            <!-- Card 2: Custom Fanfic -->
-            <div class="card highlight-card">
-                <div class="card-image">
-                    <span class="badge badge-glow">Commissions Open</span>
-                    <img src="https://images.unsplash.com/photo-1455390582262-044cdead277a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                        alt="Custom Story">
-                </div>
-                <div class="card-content">
-                    <h2>Bespoke Fanfiction</h2>
-                    <p>Have a specific scenario, AU, or pairing in mind? Let me bring your daydream to life. Get a
-                        custom, personalized fanfic written exclusively for you.</p>
-                    <button id="open-modal-btn" class="btn btn-primary">Request a Story <i
-                            class="fas fa-magic"></i></button>
-                </div>
-            </div>
-
-        </div>
-        <!-- Interactive Book Pricing Section -->
+            <!-- Interactive Book Pricing Section -->
         <section class="pricing-section">
             <div class="pricing-header">
                 <p class="tagline">Bespoke Story Commissions</p>
@@ -154,7 +117,6 @@
                     </div>
 
                 </div>
-
                 <!-- පිටු පෙරළන පාලක කොටස (Page Turn Controls & Feather Slider) -->
                 <!-- පිටු පෙරළන පාලක කොටස (Page Turn Controls & Feather Slider) -->
                 <div class="book-controls">
@@ -180,6 +142,47 @@
                 </div>
             </div>
         </section>
+
+
+    <!-- Main Content: The 2 Cards -->
+    <main class="container">
+        <div class="cards-grid">
+
+            <!-- Card 1: Wattpad Story -->
+            <div class="card">
+                <div class="card-image">
+                    <span class="badge">Ongoing Story</span>
+                    <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                        alt="Story Cover">
+                </div>
+                <div class="card-content">
+                    <h2>Midnight Confessions</h2>
+                    <p>Couldn't wait for the next Wattpad update? Read the exclusive upcoming chapters of my ongoing
+                        romance story right here before anyone else.</p>
+                    <a href="stories.html" id="read-stories-btn" class="btn btn-secondary">Read Next Chapters <i
+                            class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+            
+
+            <!-- Card 2: Custom Fanfic -->
+            <div class="card highlight-card">
+                <div class="card-image">
+                    <span class="badge badge-glow">Commissions Open</span>
+                    <img src="https://images.unsplash.com/photo-1455390582262-044cdead277a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                        alt="Custom Story">
+                </div>
+                <div class="card-content">
+                    <h2>Bespoke Fanfiction</h2>
+                    <p>Have a specific scenario, AU, or pairing in mind? Let me bring your daydream to life. Get a
+                        custom, personalized fanfic written exclusively for you.</p>
+                    <button id="open-modal-btn" class="btn btn-primary">Request a Story <i
+                            class="fas fa-magic"></i></button>
+                </div>
+            </div>
+
+        </div>
+
 
         <!-- Reader Testimonials -->
         <section class="reviews">
@@ -267,19 +270,15 @@
                     <textarea id="req-plot" rows="4" required
                         placeholder="Describe what happens in the story, genre (Fluff, Angst, Romance), etc."></textarea>
                 </div>
-                <button type="submit" id="req-submit-btn" class="btn btn-primary" style="width: 100%;">Send Request <i
-                        class="fas fa-paper-plane"></i></button>
-                <!-- Send Request එබූ පසු මතුවන PayPal ගෙවීමේ කොටස -->
-                <div id="paypal-payment-section" class="paypal-box" style="display: none;">
-                    <p class="paypal-prompt">
-                        <i class="fas fa-lock"></i> Complete your payment of <strong
-                            id="paypal-amount-text">$9.90</strong> to submit your request:
-                    </p>
-                    <div id="paypal-button-container"></div>
-                    <button type="button" id="cancel-payment-btn" class="btn btn-secondary"
-                        style="width: 100%; margin-top: 8px; padding: 8px;">
-                        <i class="fas fa-arrow-left"></i> Edit Story Details
-                    </button>
+                
+                     <!-- Send Request එබූ පසු මේ Modal එක ඇතුළේම විවෘත වන Gumroad ගෙවීමේ කවුළුව -->
+                                <button type="submit" id="req-submit-btn" class="btn btn-primary" style="width: 100%;">Send Request <i class="fas fa-paper-plane"></i></button>
+
+                <!-- ස්වයංක්‍රීයව Gumroad Overlay Pop-up එක විවෘත කරන නිල Gumroad බොත්තම -->
+                <div id="gumroad-payment-section" style="display: none; text-align: center; margin-top: 12px;">
+                    <a id="gumroad-pay-btn" class="gumroad-button" href="https://katiebird1.gumroad.com/l/custom-book" data-gumroad-overlay-checkout="true">
+                        Pay with Gumroad
+                    </a>
                 </div>
             </form>
         </div>
@@ -392,8 +391,7 @@
         </form>
     </div>
 
-    <!-- PayPal SDK Script (ඔබගේ Client ID එක සමඟ) -->
-    <script src="https://www.paypal.com/sdk/js?client-id=BAAsDwqLk2liDh4tqQ_qaS-hUrCoOw8xcKSKts95ipNghyFqjeVQkY2YWglRvChaXhBSrC-HbPQKKZIn5A&currency=USD"></script>
+      
 
     <!-- Custom JS (type="module" Firebase සඳහා අත්‍යවශ්‍ය වේ) -->
     <script type="module" src="script.js"></script>

@@ -83,39 +83,47 @@ themeBtn.addEventListener('click', () => {
 });
 
 
-// --- 3. Story Request Popup Modal, PayPal Payment & Firestore Save Logic ---
+// --- 3. Story Request Popup Modal, Dynamic Gumroad Overlay & Firestore Save Logic ---
 const modal = document.getElementById('request-modal');
 const openModalBtn = document.getElementById('open-modal-btn');
 const closeBtn = document.querySelector('.close-btn');
 const form = document.getElementById('fanfic-form');
 const reqSubmitBtn = document.getElementById('req-submit-btn');
 
-const paypalPaymentSection = document.getElementById('paypal-payment-section');
-const paypalAmountText = document.getElementById('paypal-amount-text');
-const cancelPaymentBtn = document.getElementById('cancel-payment-btn');
-let paypalButtonsRendered = false;
+// ඔබගේ Gumroad Product ලින්ක් එක
+const GUMROAD_PRODUCT_URL = "https://katiebird1.gumroad.com/l/custom-book";
 
-// Form එකේ inputs Lock හෝ Unlock කිරීමේ පහසුකම
-function toggleFormInputs(disabled) {
-    document.getElementById('req-name').disabled = disabled;
-    document.getElementById('req-contact').disabled = disabled;
-    document.getElementById('req-fandom').disabled = disabled;
-    document.getElementById('req-plot').disabled = disabled;
-    document.getElementById('modal-time-slider').disabled = disabled;
-    document.getElementById('modal-minus-btn').disabled = disabled;
-    document.getElementById('modal-plus-btn').disabled = disabled;
-}
-
-// නැවත මුල් තත්වයට (Send Request බොත්තම පෙනෙන තත්වයට) පත් කිරීම
-function resetPaymentStep() {
-    paypalPaymentSection.style.display = 'none';
-    reqSubmitBtn.style.display = 'inline-block';
-    toggleFormInputs(false);
-}
+// Gumroad හි ඔබ සාදා ඇති Versions 25 හි නම් පිළිවෙලින්
+const GUMROAD_VERSIONS = [
+    "05 Mins - 1000+ Words",
+    "10 Mins - 2000+ Words",
+    "15 Mins - 3000+ Words",
+    "20 Mins - 4000+ Words",
+    "25 Mins - 5000+ Words",
+    "30 Mins - 6000+ Words",
+    "35 Mins - 7000+ Words",
+    "40 Mins - 8000+ Words",
+    "45 Mins - 9000+ Words",
+    "50 Mins - 10000+ Words",
+    "55 Mins - 11000+ Words",
+    "1 Hr - 12000+ Words",
+    "1 Hr 15 Mins - 15000+ Words",
+    "1 Hr 30 Mins - 18000+ Words",
+    "1 Hr 45 Mins - 21000+ Words",
+    "2 Hrs - 24000+ Words",
+    "2 Hrs 20 Mins - 28000+ Words",
+    "2 Hrs 40 Mins - 32000+ Words",
+    "3 Hrs - 36000+ Words",
+    "3 Hrs 30 Mins - 42000+ Words",
+    "4 Hrs - 48000+ Words",
+    "4 Hrs 30 Mins - 54000+ Words",
+    "5 Hrs - 60000+ Words",
+    "5 Hrs 30 Mins - 66000+ Words",
+    "6 Hrs - 72000+ Words"
+];
 
 openModalBtn.addEventListener('click', () => {
     if (currentUser) {
-        resetPaymentStep();
         modal.style.display = 'flex';
         if (currentUser.displayName) {
             document.getElementById('req-name').value = currentUser.displayName;
@@ -130,122 +138,80 @@ openModalBtn.addEventListener('click', () => {
 
 closeBtn.addEventListener('click', () => {
     modal.style.display = 'none';
-    resetPaymentStep();
 });
 
-cancelPaymentBtn.addEventListener('click', () => {
-    resetPaymentStep();
-});
-
-// "Send Request" එබූ විට PayPal බොත්තම පෙන්වීම
-form.addEventListener('submit', (e) => {
+// Form එක Submit කළ විට Firestore හි Save කර, අලුතින් <a> ටැගයක් සාදා Gumroad Pop-up විවෘත කිරීම
+form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    if (!window.paypal) {
-        alert("PayPal is still loading or blocked by your browser. Please refresh and try again.");
-        return;
-    }
+    reqSubmitBtn.innerHTML = 'Saving & Opening Checkout... <i class="fas fa-spinner fa-spin"></i>';
+    reqSubmitBtn.disabled = true;
 
-    // තෝරාගත් පැකේජයේ ගාණ පෙන්වා PayPal කොටස විවෘත කිරීම
-    paypalAmountText.textContent = selectedPackageData.finalPrice;
-    reqSubmitBtn.style.display = 'none';
-    paypalPaymentSection.style.display = 'block';
-    toggleFormInputs(true); // ගෙවන අතරතුර විස්තර වෙනස් නොවීමට Lock කිරීම
+    const reqName = document.getElementById('req-name').value;
+    const reqContact = document.getElementById('req-contact').value;
+    const reqFandom = document.getElementById('req-fandom').value;
+    const reqPlot = document.getElementById('req-plot').value;
 
-    // PayPal බොත්තම් වරක් පමණක් Render කිරීම
-    if (!paypalButtonsRendered) {
-        paypal.Buttons({
-            // 1. ගෙවිය යුතු මුදල සහ පැකේජ් විස්තර PayPal වෙත යැවීම
-                        // 1. ගෙවිය යුතු මුදල, පැකේජ් විස්තර සහ පාඨකයාගේ නම/Email ඉබේම PayPal වෙත යැවීම
-            createOrder: function(data, actions) {
-                const numericPrice = selectedPackageData.finalPrice.replace('$', '');
-                
-                // පාඨකයා Form එකේ දුන් නම First Name සහ Last Name ලෙස වෙන් කර ගැනීම
-                const fullName = document.getElementById('req-name').value.trim() || "Reader";
-                const nameParts = fullName.split(' ');
-                const firstName = nameParts[0];
-                const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : "";
+    // තෝරාගත් පියවරට අදාළ Gumroad Version නම ලබාගැනීම
+    const selectedVersionName = GUMROAD_VERSIONS[currentStepIndex] || GUMROAD_VERSIONS[0];
 
-                return actions.order.create({
-                    // PayPal කාඩ් ෆෝම් එකේ නම සහ Email ඉබේම පිරවීම (Auto-fill)
-                    payer: {
-                        name: {
-                            given_name: firstName,
-                            surname: lastName
-                        },
-                        email_address: currentUser.email
-                    },
-                    application_context: {
-                        shipping_preference: "NO_SHIPPING", // ලිපිනය ඇසීම නතර කරයි
-                        user_action: "PAY_NOW"              // කෙලින්ම "Pay Now" බොත්තම පෙන්වයි
-                    },
-                    purchase_units: [{
-                        description: `Reverie Fics Custom Story (${selectedPackageData.readingTime} - ${selectedPackageData.words})`,
-                        amount: {
-                            currency_code: "USD",
-                            value: numericPrice
-                        }
-                    }]
-                });
-            },
-            // 2. ගෙවීම සාර්ථක වූ සැණින් Firestore Database එකේ Order එක සුරැකීම
-            onApprove: async function(data, actions) {
-                try {
-                    const details = await actions.order.capture();
-                    
-                    const reqName = document.getElementById('req-name').value;
-                    const reqContact = document.getElementById('req-contact').value;
-                    const reqFandom = document.getElementById('req-fandom').value;
-                    const reqPlot = document.getElementById('req-plot').value;
+    // ?wanted=true&option=...&email=... සහිත URL එක සෑදීම
+    const checkoutUrl = `${GUMROAD_PRODUCT_URL}?wanted=true&option=${encodeURIComponent(selectedVersionName)}&email=${encodeURIComponent(currentUser.email)}`;
 
-                    const userDocRef = doc(db, "story_requests", currentUser.uid);
-                    await setDoc(userDocRef, {
-                        accountName: currentUser.displayName || reqName,
-                        accountEmail: currentUser.email,
-                        lastRequestAt: serverTimestamp()
-                    }, { merge: true });
+    try {
+        // 1. පළමුව Firestore Database එකේ දත්ත සුරැකීම
+        const userDocRef = doc(db, "story_requests", currentUser.uid);
+        await setDoc(userDocRef, {
+            accountName: currentUser.displayName || reqName,
+            accountEmail: currentUser.email,
+            lastRequestAt: serverTimestamp()
+        }, { merge: true });
 
-                    const userRequestsCol = collection(db, "story_requests", currentUser.uid, "requests");
-                    await addDoc(userRequestsCol, {
-                        name: reqName,
-                        contact: reqContact,
-                        fandom: reqFandom,
-                        plot: reqPlot,
-                        packageTime: selectedPackageData.readingTime,
-                        packageMinutes: selectedPackageData.minutes,
-                        packageWords: selectedPackageData.words,
-                        packagePrice: selectedPackageData.finalPrice,
-                        packageDiscount: selectedPackageData.discount,
-                        // ගෙවීමේ විස්තර (Payment Details):
-                        paymentStatus: "Paid ✅",
-                        paypalOrderId: details.id,
-                        payerEmail: details.payer?.email_address || "",
-                        status: "Paid - Pending Author Review ✨",
-                        requestedAt: serverTimestamp()
-                    });
+        const userRequestsCol = collection(db, "story_requests", currentUser.uid, "requests");
+        await addDoc(userRequestsCol, {
+            name: reqName,
+            contact: reqContact,
+            fandom: reqFandom,
+            plot: reqPlot,
+            packageTime: selectedPackageData.readingTime,
+            packageMinutes: selectedPackageData.minutes,
+            packageWords: selectedPackageData.words,
+            packagePrice: selectedPackageData.finalPrice,
+            packageDiscount: selectedPackageData.discount,
+            gumroadVersion: selectedVersionName,
+            status: "Awaiting Payment Confirmation ⏳",
+            requestedAt: serverTimestamp()
+        });
 
-                    alert(`Payment Successful! 🎉 Thank you, ${reqName}! Your order (${selectedPackageData.readingTime}) has been placed.`);
-                    form.reset();
-                    resetPaymentStep();
-                    modal.style.display = 'none';
+        // 2. Form එක Reset කර request-modal එක වැසීම
+        form.reset();
+        modal.style.display = 'none';
 
-                } catch (error) {
-                    console.error("Error after payment:", error);
-                    alert("Payment was captured, but there was an issue saving your request. Please message the author in live chat!");
-                }
-            },
+        // 3. JavaScript මඟින් අලුතින්ම <a class="gumroad-button"> සබැඳියක් සාදා body එකට එක් කර Click කිරීම
+        const dynamicGumroadLink = document.createElement('a');
+        dynamicGumroadLink.className = 'gumroad-button';
+        dynamicGumroadLink.href = checkoutUrl;
+        dynamicGumroadLink.setAttribute('data-gumroad-overlay-checkout', 'true');
+        dynamicGumroadLink.style.display = 'none';
+        document.body.appendChild(dynamicGumroadLink);
 
-            // 3. දෝෂයක් ආවොත් පෙන්වීම
-            onError: function(err) {
-                console.error("PayPal Error:", err);
-                alert("Payment could not be completed. Please try again.");
-            }
-        }).render('#paypal-button-container');
+        // gumroad.js හි MutationObserver එකට අලුත් <a> ටැගය හඳුනා ගැනීමට 100ms ලබා දී Click කිරීම
+        setTimeout(() => {
+            dynamicGumroadLink.click();
+            // Pop-up එක විවෘත වූ පසු තාවකාලික <a> ටැගය ඉවත් කිරීම
+            setTimeout(() => {
+                dynamicGumroadLink.remove();
+            }, 2000);
+        }, 100);
 
-        paypalButtonsRendered = true;
+    } catch (error) {
+        console.error("Error saving request: ", error);
+        alert("Failed to send request. Please try again!");
+    } finally {
+        reqSubmitBtn.innerHTML = 'Send Request <i class="fas fa-paper-plane"></i>';
+        reqSubmitBtn.disabled = false;
     }
 });
-
 // --- 4. Log In / Sign Up Modal & Firebase Auth Logic ---
 const authModal = document.getElementById('auth-modal');
 const openAuthBtn = document.getElementById('open-auth-btn');

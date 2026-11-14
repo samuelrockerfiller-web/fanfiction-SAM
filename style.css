@@ -69,13 +69,57 @@ body {
 }
 
 /* Hero Section */
+/* Hero Section (With Magical Background Image) */
 .hero {
     text-align: center;
-    padding: 3rem 1.5rem;
-    max-width: 750px;
-    margin: 0 auto;
+    padding: 5.5rem 2rem;
+    max-width: 1100px;
+    margin: 0.5rem auto 3rem auto;
+    border-radius: 24px;
+    /* පසුබිම් පින්තූරය සහ ඊට උඩින් වැටෙන දම්/කළු මිශ්‍ර අඳුරු ආවරණය (Overlay) */
+    background: linear-gradient(135deg, rgba(18, 14, 22, 0.82) 0%, rgba(44, 25, 77, 0.75) 100%),
+                url('https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80');
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.18);
+    border: 1px solid rgba(157, 117, 255, 0.3);
+    position: relative;
+    overflow: hidden;
 }
 
+/* Hero Section එකේ අකුරු Light සහ Dark Mode දෙකේදීම ඉතා පැහැදිලිව කැපී පෙනීමට */
+.hero .tagline {
+    color: #c5a8ff;
+    background: rgba(124, 77, 255, 0.25);
+    display: inline-block;
+    padding: 6px 18px;
+    border-radius: 30px;
+    border: 1px solid rgba(197, 168, 255, 0.35);
+    backdrop-filter: blur(4px);
+    margin-bottom: 1rem;
+}
+
+.hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.2rem;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+    color: #ffffff;
+    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.hero h1 span {
+    font-style: italic;
+    color: #b494ff;
+}
+
+.hero .bio {
+    color: #e6dff0;
+    font-size: 1.08rem;
+    max-width: 680px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
 .tagline {
     text-transform: uppercase;
     letter-spacing: 2px;
@@ -661,9 +705,10 @@ footer {
 
     /* 2. මුල් පිටුවේ කොටස් (Hero & Cards) */
     .hero {
-        padding: 2rem 1rem;
+        padding: 3.5rem 1.2rem;
+        margin: 0.5rem 1rem 2rem 1rem;
+        border-radius: 18px;
     }
-
     .hero h1 {
         font-size: 2.2rem;
     }
@@ -765,7 +810,7 @@ footer {
    ========================================================= */
 .pricing-section {
     margin-bottom: 4rem;
-    padding-top: 2rem;
+    padding: 2.5rem 1.5rem 0 1.5rem; /* දෙපසින් 1.5rem පරතරයක් ලබා දීම */
     border-top: 1px solid var(--border-color);
 }
 
@@ -1475,4 +1520,24 @@ body.dark-mode .modal-discount-tag {
 .paypal-prompt strong {
     color: var(--accent-color);
     font-size: 1.05rem;
+}
+/* --- Embedded Gumroad Checkout Iframe Styles --- */
+.gumroad-iframe-wrapper {
+    width: 100%;
+    height: 460px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    background: #ffffff;
+}
+
+#gumroad-checkout-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.btn-gumroad:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(255, 92, 138, 0.5);
 }
