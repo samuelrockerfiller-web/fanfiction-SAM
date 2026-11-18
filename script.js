@@ -8,7 +8,8 @@ import {
     signOut,
     updateProfile,
     GoogleAuthProvider,
-    signInWithPopup
+    signInWithPopup,
+    sendEmailVerification
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 import { 
@@ -83,7 +84,7 @@ themeBtn.addEventListener('click', () => {
 });
 
 
-// --- 3. Story Request Popup Modal, Dynamic Gumroad Overlay & Firestore Save Logic ---
+// --- 3. Story Request Popup Modal, Dynamic Gumroad Checkout & Firestore Save Logic ---
 const modal = document.getElementById('request-modal');
 const openModalBtn = document.getElementById('open-modal-btn');
 const closeBtn = document.querySelector('.close-btn');
@@ -93,7 +94,7 @@ const reqSubmitBtn = document.getElementById('req-submit-btn');
 // ඔබගේ Gumroad Product ලින්ක් එක
 const GUMROAD_PRODUCT_URL = "https://katiebird1.gumroad.com/l/custom-book";
 
-// Gumroad හි ඔබ සාදා ඇති Versions 25 හි නම් පිළිවෙලින්
+// 1. Gumroad හි ඔබ සාදා ඇති Versions 25 හි නම් පිළිවෙලින් (මෙය Database එකේ Save වීමට අත්‍යවශ්‍ය වේ)
 const GUMROAD_VERSIONS = [
     "05 Mins - 1000+ Words",
     "10 Mins - 2000+ Words",
@@ -122,6 +123,35 @@ const GUMROAD_VERSIONS = [
     "6 Hrs - 72000+ Words"
 ];
 
+// 2. Gumroad හි එක් එක් Version එකේ Share Link එක හෝ Option ID එක පිළිවෙලින්
+const GUMROAD_OPTION_IDS = [
+    "https://katiebird1.gumroad.com/l/custom-book?option=90hlaffWqUjesZ4I_9txbw%3D%3D&_gl=1*14oqzvt*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzYzNjY2JGoyMSRsMCRoMA..",  // 1. 05 Mins - 1000+ Words ($9.90)
+    "https://katiebird1.gumroad.com/l/custom-book?option=9irR_vbBcNcNMrUd6CEwVg%3D%3D&_gl=1*14w2aw9*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzYzNzExJGo2MCRsMCRoMA..",  // 2. 10 Mins - 2000+ Words ($18.90)
+    "https://katiebird1.gumroad.com/l/custom-book?option=SCQplKiEfdwpOi3Jv7Fvrw%3D%3D&_gl=1*9mlvzq*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzYzODAyJGo0OCRsMCRoMA..",  // 3. 15 Mins - 3000+ Words
+    "https://katiebird1.gumroad.com/l/custom-book?option=DermBNKh29kIzatV5b4Www%3D%3D&_gl=1*167o5bb*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzY0MDEzJGo2MCRsMCRoMA..",  // 4. 20 Mins - 4000+ Words
+    "https://katiebird1.gumroad.com/l/custom-book?option=4pNrvop1ipmZ9lmfDB-vUQ%3D%3D&_gl=1*4jjxm3*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzY0MDEzJGo2MCRsMCRoMA..",  // 5. 25 Mins - 5000+ Words
+    "https://katiebird1.gumroad.com/l/custom-book?option=IzsiuhEUwbpkU5CLc7xmSQ%3D%3D&_gl=1*1t90f5n*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzY0MDY2JGo3JGwwJGgw",  // 6. 30 Mins - 6000+ Words
+    "https://katiebird1.gumroad.com/l/custom-book?option=d86NWhARJvAVPb4VJPgecw%3D%3D&_gl=1*1t90f5n*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzY0MDY2JGo3JGwwJGgw",  // 7. 35 Mins - 7000+ Words
+    "https://katiebird1.gumroad.com/l/custom-book?option=itKuZa3z3n3mmyQ2fP7zKw%3D%3D&_gl=1*q0jg1i*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzY0MDY2JGo3JGwwJGgw",  // 8. 40 Mins - 8000+ Words
+    "https://katiebird1.gumroad.com/l/custom-book?option=KP-GklerCFS848Sd-GpWLg%3D%3D&_gl=1*q0jg1i*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzY0MDY2JGo3JGwwJGgw",  // 9. 45 Mins - 9000+ Words
+    "https://katiebird1.gumroad.com/l/custom-book?option=8Fgf2eTaFxVS7l1mH2XhSw%3D%3D&_gl=1*q0jg1i*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzY0MDY2JGo3JGwwJGgw", // 10. 50 Mins - 10000+ Words
+    "https://katiebird1.gumroad.com/l/custom-book?option=rClayQts1UBjmEfpY0TksQ%3D%3D&_gl=1*pycjfk*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzY0MDY2JGo3JGwwJGgw", // 11. 55 Mins - 11000+ Words
+    "https://katiebird1.gumroad.com/l/custom-book?option=lO7wgJQiQrGlyrN5nUzTdw%3D%3D&_gl=1*pycjfk*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzY0MDY2JGo3JGwwJGgw", // 12. 1 Hr - 12000+ Words
+    "https://katiebird1.gumroad.com/l/custom-book?option=nmwtblnoRnOsh4HvyNtCdw%3D%3D&_gl=1*pycjfk*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzY0MDY2JGo3JGwwJGgw", // 13. 1 Hr 15 Mins - 15000+ Words
+    "https://katiebird1.gumroad.com/l/custom-book?option=dQM7Xs-F136f_w9LbDb03Q%3D%3D&_gl=1*pycjfk*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzY0MDY2JGo3JGwwJGgw", // 14. 1 Hr 30 Mins - 18000+ Words
+    "https://katiebird1.gumroad.com/l/custom-book?option=TOg9ak0RBd3h5Xv6ryuE9A%3D%3D&_gl=1*1tb78dp*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzY0MDY2JGo3JGwwJGgw", // 15. 1 Hr 45 Mins - 21000+ Words
+    "https://katiebird1.gumroad.com/l/custom-book?option=-ZLvTvQEQXBz7Wyl2n3EiQ%3D%3D&_gl=1*1tb78dp*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzY0MDY2JGo3JGwwJGgw", // 16. 2 Hrs - 24000+ Words
+    "https://katiebird1.gumroad.com/l/custom-book?option=c7Sd8S5NtlLF_6ErLXeorQ%3D%3D&_gl=1*1tb78dp*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzY0MDY2JGo3JGwwJGgw", // 17. 2 Hrs 20 Mins - 28000+ Words
+    "https://katiebird1.gumroad.com/l/custom-book?option=QIv8JLjB9Y3pp2cLJjOzbg%3D%3D&_gl=1*1tb78dp*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzY0MDY2JGo3JGwwJGgw", // 18. 2 Hrs 40 Mins - 32000+ Words
+    "https://katiebird1.gumroad.com/l/custom-book?option=MwEd0x_7-aqv3e4ETw8zbA%3D%3D&_gl=1*1tb78dp*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzY0MDY2JGo3JGwwJGgw", // 19. 3 Hrs - 36000+ Words
+    "https://katiebird1.gumroad.com/l/custom-book?option=3fSB6qiALjx2jTdB6t6hKQ%3D%3D&_gl=1*1sxr9wj*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzY0MDY2JGo3JGwwJGgw", // 20. 3 Hrs 30 Mins - 42000+ Words
+    "https://katiebird1.gumroad.com/l/custom-book?option=FQw7-dV22AA3adyh4-P-jg%3D%3D&_gl=1*1sxr9wj*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzY0MDY2JGo3JGwwJGgw", // 21. 4 Hrs - 48000+ Words
+    "https://katiebird1.gumroad.com/l/custom-book?option=8iHTAWRJQAoDbBJOIBxrkQ%3D%3D&_gl=1*1sxr9wj*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzY0MDY2JGo3JGwwJGgw", // 22. 4 Hrs 30 Mins - 54000+ Words
+    "https://katiebird1.gumroad.com/l/custom-book?option=kbZvQFOt8K18_woZ5aW06A%3D%3D&_gl=1*1sxr9wj*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzY0MDY2JGo3JGwwJGgw", // 23. 5 Hrs - 60000+ Words
+    "https://katiebird1.gumroad.com/l/custom-book?option=nWKT43kg7z78wQMTAP-heg%3D%3D&_gl=1*1sxr9wj*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzY0MDY2JGo3JGwwJGgw", // 24. 5 Hrs 30 Mins - 66000+ Words
+    "https://katiebird1.gumroad.com/l/custom-book?option=hfwg4o34l45ij9xT7R8Z_Q%3D%3D&_gl=1*1sxr9wj*_ga*NTM4MTg3NDQ1LjE3ODc4NDA0OTg.*_ga_6LJN6D94N6*czE3OTQ3NjMzNTYkbzE4JGcxJHQxNzk0NzY0MDY2JGo3JGwwJGgw"  // 25. 6 Hrs - 72000+ Words
+];
+
 openModalBtn.addEventListener('click', () => {
     if (currentUser) {
         modal.style.display = 'flex';
@@ -140,7 +170,7 @@ closeBtn.addEventListener('click', () => {
     modal.style.display = 'none';
 });
 
-// Form එක Submit කළ විට Firestore හි Save කර, අලුතින් <a> ටැගයක් සාදා Gumroad Pop-up විවෘත කිරීම
+// Form එක Submit කළ විට Firestore හි Save කර කෙලින්ම අදාළ පැකේජයේ Gumroad Checkout පිටුවට යොමු කිරීම
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -152,11 +182,23 @@ form.addEventListener('submit', async (e) => {
     const reqFandom = document.getElementById('req-fandom').value;
     const reqPlot = document.getElementById('req-plot').value;
 
-    // තෝරාගත් පියවරට අදාළ Gumroad Version නම ලබාගැනීම
+    // තෝරාගත් පියවරට අදාළ Gumroad Version නම සහ Share Link එක ලබාගැනීම
     const selectedVersionName = GUMROAD_VERSIONS[currentStepIndex] || GUMROAD_VERSIONS[0];
+    const rawOption = GUMROAD_OPTION_IDS[currentStepIndex] || GUMROAD_OPTION_IDS[0];
 
-    // ?wanted=true&option=...&email=... සහිත URL එක සෑදීම
-    const checkoutUrl = `${GUMROAD_PRODUCT_URL}?wanted=true&option=${encodeURIComponent(selectedVersionName)}&email=${encodeURIComponent(currentUser.email)}`;
+    // ලින්ක් එකෙන් option= වලට පසුව ඇති කොටස වෙන් කර ගැනීම
+    let cleanOptionId = rawOption.includes('option=') 
+        ? rawOption.split('option=')[1].split('&')[0] 
+        : rawOption.trim();
+
+    cleanOptionId = encodeURIComponent(decodeURIComponent(cleanOptionId));
+
+    // නිවැරදි Option ID එක සහ පාඨකයාගේ Email එක සහිතව Checkout URL එක සෑදීම
+    // URL එක ඕනෑවට වඩා දිග වීම වැළැක්වීමට Plot එකේ මුල් අකුරු 1500 ලබා ගැනීම
+    const safePlot = reqPlot.substring(0, 1500);
+
+    // නිවැරදි Option ID එක, Email එක සහ අලුත් Parameters 3 (uid, contact, plot) සහිතව Checkout URL එක සෑදීම
+    const checkoutUrl = `${GUMROAD_PRODUCT_URL}?option=${cleanOptionId}&wanted=true&email=${encodeURIComponent(currentUser.email)}&uid=${encodeURIComponent(currentUser.uid)}&contact=${encodeURIComponent(reqContact)}&plot=${encodeURIComponent(safePlot)}`;
 
     try {
         // 1. පළමුව Firestore Database එකේ දත්ත සුරැකීම
@@ -187,22 +229,8 @@ form.addEventListener('submit', async (e) => {
         form.reset();
         modal.style.display = 'none';
 
-        // 3. JavaScript මඟින් අලුතින්ම <a class="gumroad-button"> සබැඳියක් සාදා body එකට එක් කර Click කිරීම
-        const dynamicGumroadLink = document.createElement('a');
-        dynamicGumroadLink.className = 'gumroad-button';
-        dynamicGumroadLink.href = checkoutUrl;
-        dynamicGumroadLink.setAttribute('data-gumroad-overlay-checkout', 'true');
-        dynamicGumroadLink.style.display = 'none';
-        document.body.appendChild(dynamicGumroadLink);
-
-        // gumroad.js හි MutationObserver එකට අලුත් <a> ටැගය හඳුනා ගැනීමට 100ms ලබා දී Click කිරීම
-        setTimeout(() => {
-            dynamicGumroadLink.click();
-            // Pop-up එක විවෘත වූ පසු තාවකාලික <a> ටැගය ඉවත් කිරීම
-            setTimeout(() => {
-                dynamicGumroadLink.remove();
-            }, 2000);
-        }, 100);
+        // 3. නිවැරදි පැකේජය සහ මිල සහිත Gumroad Checkout පිටුව වෙත යොමු කිරීම
+        window.location.href = checkoutUrl;
 
     } catch (error) {
         console.error("Error saving request: ", error);
@@ -229,12 +257,14 @@ const signupForm = document.getElementById('signup-form');
 let currentUser = null;
 
 onAuthStateChanged(auth, (user) => {
-    currentUser = user;
-    if (user) {
+    // පරිශීලකයා සිටී නම් සහ ඔහුගේ Email එක Verify කර ඇත්නම් පමණක් Log වීමට ඉඩ දීම
+    if (user && user.emailVerified) {
+        currentUser = user;
         const displayName = user.displayName ? user.displayName : "Reader";
         openAuthBtn.innerHTML = `${displayName} (Log Out) <i class="fas fa-sign-out-alt"></i>`;
         actionBtn.style.display = 'inline-block';
     } else {
+        currentUser = null;
         openAuthBtn.innerHTML = `Log In <i class="fas fa-user"></i>`;
         actionBtn.style.display = 'none';
     }
@@ -269,7 +299,7 @@ showLoginBtn.addEventListener('click', () => {
 });
 
 
-// --- 5. SIGN UP ---
+// --- 5. SIGN UP (With Email Verification) ---
 signupForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('signup-name').value;
@@ -277,10 +307,12 @@ signupForm.addEventListener('submit', async (e) => {
     const password = document.getElementById('signup-password').value;
 
     try {
+        // 1. ගිණුම සෑදීම සහ නම ඇතුළත් කිරීම
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         await updateProfile(user, { displayName: name });
 
+        // 2. Firestore හි පරිශීලකයාගේ තොරතුරු සුරැකීම
         await setDoc(doc(db, "users", user.uid), {
             uid: user.uid,
             name: name,
@@ -289,35 +321,65 @@ signupForm.addEventListener('submit', async (e) => {
             joinedDate: serverTimestamp()
         });
 
-        alert(`Account created successfully! Welcome, ${name} 🎉`);
+        // 3. පරිශීලකයාගේ Email ලිපිනයට Verification ලින්ක් එක යැවීම
+        await sendEmailVerification(user);
+
+        // 4. Email එක Verify කරන තුරු ගිණුමෙන් තාවකාලිකව Sign Out කිරීම
+        await signOut(auth);
+
+        alert(`Account created! 📧 We have sent a verification link to ${email}.\n\nPlease check your Inbox (or Spam folder), click the link to verify your email, and then Log In!`);
+        
         signupForm.reset();
-        authModal.style.display = 'none';
-        openAuthBtn.innerHTML = `${name} (Log Out) <i class="fas fa-sign-out-alt"></i>`;
+        // කෙලින්ම Log In කොටස පෙන්වීම
+        signupSection.style.display = 'none';
+        loginSection.style.display = 'block';
+
     } catch (error) {
         alert("Error: " + error.message);
     }
 });
 
-
-// --- 6. LOG IN ---
-loginForm.addEventListener('submit', (e) => {
+// --- 6. LOG IN (With Email Verification Check) ---
+loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
 
-    signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            const user = userCredential.user;
-            const name = user.displayName ? user.displayName : "back";
-            alert(`Welcome ${name}! You have successfully logged in. ✨`);
-            loginForm.reset();
-            authModal.style.display = 'none';
-        })
-        .catch(() => {
-            alert("Login Failed: Invalid email or password.");
-        });
-});
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
 
+        // 1. Email එක තහවුරු (Verify) කර ඇත්දැයි පරීක්ෂා කිරීම
+        if (!user.emailVerified) {
+            // පරිශීලකයාට අවශ්‍ය නම් නැවත Verification Email එකක් යැවීමට අවස්ථාව දීම
+            const resend = confirm(
+                "Your email address is not verified yet! ⚠️\n\nPlease check your email inbox (and Spam folder) for the verification link.\n\nWould you like us to resend the verification email?"
+            );
+
+            if (resend) {
+                await sendEmailVerification(user);
+                alert(`A new verification email has been sent to ${email}. Please verify and log in again!`);
+            }
+
+            // Verify කර නොමැති නිසා නැවත Log Out කිරීම
+            await signOut(auth);
+            return;
+        }
+
+        // 2. Email එක Verify කර ඇත්නම් සාර්ථකව Log කිරීම
+        currentUser = user;
+        const displayName = user.displayName ? user.displayName : "Reader";
+        openAuthBtn.innerHTML = `${displayName} (Log Out) <i class="fas fa-sign-out-alt"></i>`;
+        actionBtn.style.display = 'inline-block';
+
+        alert(`Welcome ${displayName}! You have successfully logged in. ✨`);
+        loginForm.reset();
+        authModal.style.display = 'none';
+
+    } catch (error) {
+        alert("Login Failed: Invalid email or password.");
+    }
+});
 
 // --- 7. GOOGLE SIGN IN ---
 const googleLoginBtn = document.getElementById('google-login-btn');
