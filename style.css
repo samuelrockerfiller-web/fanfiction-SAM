@@ -1541,3 +1541,51 @@ body.dark-mode .modal-discount-tag {
     transform: translateY(-2px);
     box-shadow: 0 8px 22px rgba(255, 92, 138, 0.5);
 }
+
+/* --- Story Reader Inline Author Note & Request Button Styles --- */
+.story-chunk-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.story-inline-note {
+    margin: 2.2rem 0;
+    padding: 1.5rem 1.8rem;
+    background: rgba(124, 77, 255, 0.08);
+    border-left: 4px solid var(--accent-color);
+    border-right: 1px solid var(--border-color);
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    border-radius: 12px;
+    font-family: 'Poppins', sans-serif;
+    white-space: normal;
+    box-shadow: 0 6px 20px rgba(124, 77, 255, 0.08);
+}
+
+.story-inline-note-header {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent-color);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.story-inline-note p {
+    font-size: 0.98rem;
+    color: var(--text-color);
+    line-height: 1.6;
+    margin-bottom: 0;
+    white-space: pre-wrap;
+}
+
+.story-inline-note .story-note-btn-wrap {
+    margin-top: 1.2rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--border-color);
+    display: flex;
+    justify-content: flex-start;
+}

@@ -221,7 +221,7 @@ form.addEventListener('submit', async (e) => {
             packagePrice: selectedPackageData.finalPrice,
             packageDiscount: selectedPackageData.discount,
             gumroadVersion: selectedVersionName,
-            status: "Awaiting Payment Confirmation ⏳",
+            status: "Thanks for the request! I'll keep you posted soon ⏳",
             requestedAt: serverTimestamp()
         });
 
