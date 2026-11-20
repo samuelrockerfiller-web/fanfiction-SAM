@@ -8,6 +8,7 @@ import {
     getFirestore, 
     collection, 
     getDocs, 
+    getDoc,
     addDoc,
     doc,            
     setDoc,         
@@ -60,38 +61,104 @@ const readerTitle = document.getElementById('reader-title');
 const readerContent = document.getElementById('reader-content');
 const backToListBtn = document.getElementById('back-to-list-btn');
 
+// 1. කතා නම් ලැයිස්තුව පමණක් ලබා ගැනීම (Session Cache + Single Index Document)
 async function loadStories() {
     try {
-        const querySnapshot = await getDocs(collection(db, "stories"));
-        storiesContainer.innerHTML = '';
-
-        if (querySnapshot.empty) {
-            storiesContainer.innerHTML = '<p class="loading-text">No stories published yet. Stay tuned! ✨</p>';
+        // පළමුව Browser එකේ (sessionStorage) කතා නම් ලැයිස්තුව Save වී ඇත්දැයි බැලීම (0 Reads!)
+        const cachedTitles = sessionStorage.getItem('reverie_story_titles');
+        if (cachedTitles) {
+            renderStoryList(JSON.parse(cachedTitles));
             return;
         }
 
-        querySnapshot.forEach((docSnap) => {
-            const storyTitle = docSnap.id;
-            const data = docSnap.data();
-            const storyText = Object.values(data).find(val => typeof val === 'string') || "Story content is empty.";
+        // Browser එකේ නැතිනම් පමණක් Firestore හි Index Document එක කියවීම (කතා 100ක් තිබුණත් 1 Read පමණයි!)
+        const indexDocRef = doc(db, "stories", "--story_index--");
+        const indexSnap = await getDoc(indexDocRef);
 
-            const storyItem = document.createElement('div');
-            storyItem.className = 'story-item';
-            storyItem.innerHTML = `
-                <h3><i class="fas fa-book-open" style="color: var(--accent-color); margin-right: 10px; font-size: 1rem;"></i> ${storyTitle}</h3>
-                <span>Read Now <i class="fas fa-chevron-right"></i></span>
-            `;
+        let titles = [];
 
-            storyItem.addEventListener('click', () => {
-                openStoryReader(storyTitle, storyText);
+        if (indexSnap.exists() && Array.isArray(indexSnap.data().titles)) {
+            titles = indexSnap.data().titles;
+        } else {
+            // පළමු වතාවට පමණක් Index එක නොමැති නම් සියලු කතා බලා ස්වයංක්‍රීයව Index එක සෑදීම
+            const querySnapshot = await getDocs(collection(db, "stories"));
+            querySnapshot.forEach((docSnap) => {
+                if (docSnap.id !== "--story_index--") {
+                    titles.push(docSnap.id);
+                    const data = docSnap.data();
+                    const storyText = Object.values(data).find(val => typeof val === 'string') || "Story content is empty.";
+                    sessionStorage.setItem('reverie_story_' + docSnap.id, storyText);
+                }
             });
+            await setDoc(indexDocRef, { titles: titles });
+        }
 
-            storiesContainer.appendChild(storyItem);
-        });
+        // කතා නම් ලැයිස්තුව Browser එකේ Save කර ගැනීම
+        sessionStorage.setItem('reverie_story_titles', JSON.stringify(titles));
+        renderStoryList(titles);
 
     } catch (error) {
         console.error("Error loading stories:", error);
         storiesContainer.innerHTML = '<p class="loading-text" style="color: #ea4335;">Failed to load stories. Please check your connection.</p>';
+    }
+}
+
+// 2. කතා නම් ලැයිස්තුව පිටුවේ පෙන්වීම
+function renderStoryList(titles) {
+    storiesContainer.innerHTML = '';
+
+    if (!titles || titles.length === 0) {
+        storiesContainer.innerHTML = '<p class="loading-text">No stories published yet. Stay tuned! ✨</p>';
+        return;
+    }
+
+    titles.forEach((storyTitle) => {
+        const storyItem = document.createElement('div');
+        storyItem.className = 'story-item';
+        storyItem.innerHTML = `
+            <h3><i class="fas fa-book-open" style="color: var(--accent-color); margin-right: 10px; font-size: 1rem;"></i> ${storyTitle}</h3>
+            <span>Read Now <i class="fas fa-chevron-right"></i></span>
+        `;
+
+        storyItem.addEventListener('click', () => {
+            fetchAndOpenStory(storyTitle);
+        });
+
+        storiesContainer.appendChild(storyItem);
+    });
+}
+
+// 3. පාඨකයා Click කළ කතාව පමණක් ලෝඩ් කිරීම (හෝ Browser Cache එකෙන් ගැනීම)
+async function fetchAndOpenStory(storyTitle) {
+    // පාඨකයා මීට පෙර මෙම කතාව Open කර ඇත්නම් Browser එකෙන්ම ක්ෂණිකව පෙන්වීම (0 Reads!)
+    const cachedContent = sessionStorage.getItem('reverie_story_' + storyTitle);
+    if (cachedContent) {
+        openStoryReader(storyTitle, cachedContent);
+        return;
+    }
+
+    // අලුතින්ම කියවන කතාවක් නම් ඒ කතාව පමණක් Firestore වෙතින් ගැනීම (1 Read!)
+    try {
+        readerTitle.textContent = storyTitle;
+        readerContent.innerHTML = '<p class="loading-text"><i class="fas fa-spinner fa-spin"></i> Loading story...</p>';
+        listSection.style.display = 'none';
+        readerSection.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        const storySnap = await getDoc(doc(db, "stories", storyTitle));
+        if (storySnap.exists()) {
+            const data = storySnap.data();
+            const storyText = Object.values(data).find(val => typeof val === 'string') || "Story content is empty.";
+
+            // කතාව Browser එකේ Save කර ගැනීම (නැවත කියවන විට Reads නොකැපීමට)
+            sessionStorage.setItem('reverie_story_' + storyTitle, storyText);
+            openStoryReader(storyTitle, storyText);
+        } else {
+            readerContent.innerHTML = '<p class="loading-text" style="color: #ea4335;">Story not found.</p>';
+        }
+    } catch (error) {
+        console.error("Error fetching story:", error);
+        readerContent.innerHTML = '<p class="loading-text" style="color: #ea4335;">Failed to load story content.</p>';
     }
 }
 
